@@ -708,35 +708,33 @@ input[type="range"]#ampSlider::-moz-range-thumb {
           <div class="upload-zone" id="uploadZone">
             <input type="file" id="fileInput" accept=".mp3,.wav,audio/mpeg,audio/wav" />
             <span class="u-icon">🎵</span>
-            <span class="u-label">Dosya seç veya sürükle</span>
-            <span class="u-hint">MP3 &amp; WAV desteklenir</span>
+            <span class="u-label">Choose file or drag here</span>
+            <span class="u-hint">MP3 &amp; WAV is supported</span>
           </div>
           <div class="file-name" id="fileName"></div>
         </div>
 
-        <p>This application is used for analyzing music that you import and visualize them with atoms</p>
-         
         <div class="section">
-          <div class="section-title">Kontrol</div>
+          <div class="section-title">Control</div>
           <button id="runBtn" disabled>
             <span id="btnIcon">▶</span>
             <span id="btnText">Çalıştır (Run)</span>
           </button>
           <div class="status-box">
             <div class="status-dot" id="statusDot"></div>
-            <span id="statusText">Ses dosyası yükleyin</span>
+            <span id="statusText">Import audio file</span>
           </div>
         </div>
 
         <div class="section">
-          <div class="section-title">Canlı Frekans Analizi</div>
+          <div class="section-title">Instant Frequency Analysis</div>
           <div class="freq-display">
 
             <!-- Ana Hz göstergesi -->
             <div class="hz-meter">
               <span class="hz-big" id="hzBig">—</span>
               <span class="hz-unit">Hz</span>
-              <span class="hz-note" id="hzNote">Ses dosyası yükleyin</span>
+              <span class="hz-note" id="hzNote">Import audio file</span>
             </div>
 
             <!-- Mini spektrum analizörü -->
@@ -750,7 +748,7 @@ input[type="range"]#ampSlider::-moz-range-thumb {
               <div class="freq-range-seg seg-mid"  id="segMid">MID</div>
               <div class="freq-range-seg seg-high" id="segHigh">ÜST</div>
               <div class="freq-range-seg seg-pres" id="segPres">PRE</div>
-              <div class="freq-range-seg seg-bril" id="segBril">TİZ</div>
+              <div class="freq-range-seg seg-bril" id="segBril">TRE</div>
             </div>
 
             <!-- İstatistikler: min / max / RMS -->
