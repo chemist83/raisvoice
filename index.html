@@ -1,0 +1,1492 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Ses Dalgası Simülasyonu</title>
+<style>
+/* ===================================================
+   WINDOWS 7 AERO THEME
+   =================================================== */
+
+@import url('https://fonts.googleapis.com/css2?family=Segoe+UI:wght@400;600;700&display=swap');
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --win7-blue:       #1a4a8a;
+  --win7-blue-light: #3d7bc8;
+  --win7-blue-mid:   #2863ae;
+  --win7-aero-bg:    rgba(180,210,255,0.12);
+  --win7-aero-border:rgba(120,180,255,0.55);
+  --win7-glass:      rgba(210,230,255,0.08);
+  --win7-text:       #fff;
+  --win7-text-dark:  #1a1a1a;
+  --win7-text-mid:   #333;
+  --win7-shadow:     0 8px 32px rgba(0,30,80,0.7);
+  --win7-titleH:     30px;
+  --font: 'Segoe UI', Tahoma, Geneva, sans-serif;
+}
+
+html, body {
+  height: 100%;
+  font-family: var(--font);
+  font-size: 13px;
+  overflow: hidden;
+  background: radial-gradient(ellipse at 50% 0%, #3a6ea8 0%, #1a3d6e 35%, #0e2245 65%, #050f1f 100%);
+}
+
+/* ─── DESKTOP / OUTER SHELL ─────────────────────── */
+#desktop {
+  width: 100vw; height: 100vh;
+  display: flex; flex-direction: column;
+  position: relative;
+  overflow: hidden;
+}
+
+#desktop::before {
+  content: '';
+  position: absolute; inset: 0; pointer-events: none;
+  background:
+    radial-gradient(ellipse 60% 40% at 70% 80%, rgba(100,160,255,0.08) 0%, transparent 70%),
+    radial-gradient(ellipse 40% 60% at 20% 20%, rgba(180,220,255,0.06) 0%, transparent 70%);
+}
+
+/* ─── MAIN WINDOW ────────────────────────────────── */
+#mainWindow {
+  flex: 1;
+  margin: 10px 10px 0;
+  display: flex;
+  flex-direction: column;
+  border-radius: 8px 8px 0 0;
+  overflow: hidden;
+  box-shadow: var(--win7-shadow), inset 0 1px 0 rgba(255,255,255,0.25);
+  border: 1px solid var(--win7-aero-border);
+  border-bottom: none;
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  transition: transform 0.22s cubic-bezier(.4,0,.2,1), opacity 0.22s ease;
+}
+
+#mainWindow.minimized {
+  transform: translateY(calc(100% + 40px)) scaleY(0.05);
+  opacity: 0;
+  pointer-events: none;
+}
+
+/* ─── TITLE BAR ───────────────────────────────── */
+#titleBar {
+  height: var(--win7-titleH);
+  background: linear-gradient(180deg,
+    rgba(100,160,255,0.55) 0%,
+    rgba(50,110,220,0.70) 40%,
+    rgba(20,70,170,0.80) 60%,
+    rgba(10,50,130,0.85) 100%);
+  border-bottom: 1px solid rgba(80,140,255,0.5);
+  display: flex;
+  align-items: center;
+  padding: 0 6px;
+  user-select: none;
+  position: relative;
+  flex-shrink: 0;
+}
+
+#titleBar::after {
+  content: '';
+  position: absolute;
+  left: 6px; right: 80px; top: 1px; height: 1px;
+  background: rgba(255,255,255,0.45);
+  pointer-events: none;
+}
+
+.win-icon {
+  width: 16px; height: 16px; margin-right: 5px; flex-shrink: 0;
+  background: linear-gradient(135deg, #72b4ff 0%, #1a5cbf 100%);
+  border-radius: 3px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 10px; box-shadow: 0 1px 3px rgba(0,0,0,0.4);
+}
+
+.win-title {
+  flex: 1;
+  font-size: 12px;
+  font-weight: 600;
+  color: rgba(255,255,255,0.92);
+  text-shadow: 0 1px 2px rgba(0,0,50,0.6);
+  letter-spacing: 0.2px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.win-buttons {
+  display: flex; gap: 2px; flex-shrink: 0;
+}
+
+.win-btn {
+  width: 26px; height: 20px;
+  border: 1px solid rgba(0,0,0,0.3);
+  border-radius: 3px;
+  cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 10px; font-weight: 700;
+  color: rgba(255,255,255,0.9);
+  text-shadow: 0 1px 2px rgba(0,0,0,0.5);
+  transition: all .1s;
+  position: relative;
+  overflow: hidden;
+}
+
+.win-btn::before {
+  content: '';
+  position: absolute; inset: 0;
+  background: linear-gradient(180deg, rgba(255,255,255,0.2) 0%, rgba(255,255,255,0.05) 50%, transparent 100%);
+}
+
+.win-btn-min { background: linear-gradient(180deg,#4a90d9,#2567b8); }
+.win-btn-max { background: linear-gradient(180deg,#4a90d9,#2567b8); }
+.win-btn-close {
+  background: linear-gradient(180deg,#e05252,#b02020);
+  width: 32px;
+}
+
+.win-btn:hover { filter: brightness(1.2); }
+.win-btn:active { filter: brightness(0.85); }
+
+/* ─── WINDOW BODY ─────────────────────────────── */
+#windowBody {
+  flex: 1;
+  display: flex;
+  overflow: hidden;
+  background: rgba(5,15,40,0.6);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+}
+
+/* ─── CONTROL PANEL (left) ───────────────────── */
+#controls {
+  width: 270px; min-width: 250px;
+  background: linear-gradient(180deg,
+    rgba(30,70,150,0.55) 0%,
+    rgba(10,30,80,0.65) 100%);
+  border-right: 1px solid rgba(80,140,220,0.35);
+  display: flex; flex-direction: column;
+  overflow-y: auto; overflow-x: hidden;
+}
+
+#controls::-webkit-scrollbar { width: 8px; }
+#controls::-webkit-scrollbar-track {
+  background: rgba(20,50,120,0.4);
+  border-radius: 4px;
+}
+#controls::-webkit-scrollbar-thumb {
+  background: linear-gradient(180deg,#4a80d0,#2050a0);
+  border-radius: 4px;
+  border: 1px solid rgba(100,160,255,0.3);
+}
+
+.section {
+  padding: 10px 14px;
+  border-bottom: 1px solid rgba(80,140,220,0.2);
+}
+
+.section-title {
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 1.2px;
+  color: rgba(150,200,255,0.7);
+  margin-bottom: 8px;
+  padding-bottom: 4px;
+  border-bottom: 1px solid rgba(80,140,220,0.2);
+}
+
+/* ── Upload zone ── */
+.upload-zone {
+  border: 2px dashed rgba(80,140,220,0.45);
+  border-radius: 4px;
+  padding: 14px 10px;
+  text-align: center;
+  cursor: pointer;
+  transition: all .2s;
+  position: relative;
+  background: rgba(20,60,140,0.3);
+}
+
+.upload-zone:hover, .upload-zone.drag-over {
+  border-color: rgba(120,180,255,0.8);
+  background: rgba(40,80,180,0.35);
+}
+
+.upload-zone input[type="file"] {
+  position: absolute; inset: 0; opacity: 0; cursor: pointer; width: 100%; height: 100%;
+}
+
+.upload-zone .u-icon { font-size: 24px; display: block; margin-bottom: 4px; }
+.upload-zone .u-label { display: block; font-size: 12px; font-weight: 600; color: #c8e0ff; margin-bottom: 2px; }
+.upload-zone .u-hint  { font-size: 10px; color: rgba(150,190,255,0.6); }
+
+.file-name {
+  margin-top: 6px; display: none;
+  font-size: 11px; color: #7fdc9a;
+  background: rgba(30,120,60,0.2);
+  padding: 4px 7px; border-radius: 3px;
+  border: 1px solid rgba(80,200,100,0.25);
+  word-break: break-all;
+}
+
+/* ── Run button — Windows 7 style ── */
+#runBtn {
+  width: 100%;
+  padding: 7px 10px;
+  background: linear-gradient(180deg,
+    rgba(110,170,255,0.7) 0%,
+    rgba(50,110,230,0.85) 45%,
+    rgba(20,70,180,0.90) 55%,
+    rgba(15,55,160,0.95) 100%);
+  border: 1px solid rgba(60,130,255,0.7);
+  border-radius: 4px;
+  color: #fff;
+  font-family: var(--font);
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  display: flex; align-items: center; justify-content: center; gap: 6px;
+  text-shadow: 0 1px 2px rgba(0,0,0,0.5);
+  box-shadow: 0 1px 0 rgba(255,255,255,0.25) inset,
+              0 2px 8px rgba(0,30,120,0.5);
+  transition: all .1s;
+  position: relative; overflow: hidden;
+}
+
+#runBtn::before {
+  content: '';
+  position: absolute; left: 0; right: 0; top: 0; height: 50%;
+  background: linear-gradient(180deg, rgba(255,255,255,0.18) 0%, transparent 100%);
+  pointer-events: none;
+}
+
+#runBtn:hover:not(:disabled) { filter: brightness(1.15); }
+#runBtn:active:not(:disabled) { filter: brightness(0.9); transform: translateY(1px); }
+#runBtn:disabled {
+  background: linear-gradient(180deg, rgba(60,80,120,0.5), rgba(30,50,100,0.6));
+  border-color: rgba(60,90,160,0.3);
+  color: rgba(150,170,220,0.5);
+  cursor: not-allowed;
+}
+
+#runBtn.playing {
+  background: linear-gradient(180deg,
+    rgba(255,130,60,0.7) 0%, rgba(220,70,20,0.9) 50%, rgba(180,30,10,0.95) 100%);
+  border-color: rgba(255,120,60,0.7);
+}
+
+/* ── Status box ── */
+.status-box {
+  display: flex; align-items: center; gap: 7px;
+  padding: 6px 9px; border-radius: 3px;
+  background: rgba(10,30,80,0.5);
+  border: 1px solid rgba(60,110,200,0.3);
+  font-size: 11px; min-height: 30px;
+  margin-top: 8px;
+  color: rgba(180,210,255,0.8);
+}
+
+.status-dot {
+  width: 8px; height: 8px; border-radius: 50%;
+  background: rgba(100,140,200,0.5);
+  flex-shrink: 0; transition: all .3s;
+  border: 1px solid rgba(0,0,0,0.3);
+  box-shadow: 0 0 0 1px rgba(255,255,255,0.1);
+}
+
+.status-dot.active {
+  background: #3fb950;
+  box-shadow: 0 0 6px #3fb950, 0 0 12px rgba(63,185,80,0.4);
+  animation: pulse 1.2s ease-in-out infinite;
+}
+.status-dot.error { background: #f85149; box-shadow: 0 0 6px #f85149; }
+
+@keyframes pulse { 0%,100%{opacity:1}50%{opacity:0.4} }
+
+/* ── Logo alanı ── */
+.logo-zone {
+  border: 1px solid rgba(80,140,220,0.35);
+  border-radius: 4px;
+  background: rgba(10,25,70,0.55);
+  display: flex; align-items: center; justify-content: center;
+  height: 64px; overflow: hidden; position: relative; cursor: pointer;
+  transition: all .2s;
+}
+.logo-zone:hover { border-color: rgba(120,180,255,0.6); background: rgba(20,50,130,0.5); }
+.logo-zone input[type="file"] { position: absolute; inset: 0; opacity: 0; cursor: pointer; width: 100%; height: 100%; }
+.logo-zone img { max-width: 100%; max-height: 60px; object-fit: contain; display: none; }
+.logo-zone .logo-placeholder {
+  display: flex; flex-direction: column; align-items: center; gap: 3px;
+  color: rgba(130,170,230,0.55); font-size: 10px; pointer-events: none;
+}
+.logo-zone .logo-placeholder span { font-size: 20px; }
+
+/* ── Frekans Analizi ── */
+.freq-display {
+  display: flex; flex-direction: column; gap: 8px;
+}
+
+/* Ana Hz göstergesi */
+.hz-meter {
+  background: rgba(5,12,40,0.8);
+  border: 1px solid rgba(80,140,220,0.4);
+  border-radius: 4px;
+  padding: 10px 12px;
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+}
+.hz-meter::before {
+  content: '';
+  position: absolute; left: 0; right: 0; top: 0; height: 1px;
+  background: rgba(100,180,255,0.3);
+}
+
+.hz-big {
+  font-size: 36px;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: -1px;
+  color: #72b4ff;
+  text-shadow: 0 0 18px rgba(100,170,255,0.6), 0 0 6px rgba(80,150,255,0.4);
+  line-height: 1;
+  display: block;
+}
+.hz-unit {
+  font-size: 13px; font-weight: 600;
+  color: rgba(120,170,240,0.7);
+  letter-spacing: 1px;
+  margin-top: 2px; display: block;
+}
+.hz-note {
+  font-size: 10px; color: rgba(150,200,255,0.45);
+  margin-top: 4px; display: block;
+  letter-spacing: 0.5px;
+  min-height: 14px;
+}
+
+/* Spektrum canvas */
+#spectrumCanvas {
+  display: block;
+  width: 100%; height: 60px;
+  border-radius: 3px;
+  border: 1px solid rgba(60,100,200,0.3);
+  background: rgba(5,12,40,0.8);
+}
+
+/* Frekans aralığı göstergesi */
+.freq-range-bar {
+  display: flex; align-items: center; gap: 0;
+  border-radius: 3px; overflow: hidden;
+  height: 16px; border: 1px solid rgba(60,100,200,0.3);
+}
+.freq-range-seg {
+  flex: 1; height: 100%;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 8px; font-weight: 700; letter-spacing: .5px;
+  color: rgba(255,255,255,0.35);
+  text-transform: uppercase; transition: all .15s;
+  border-right: 1px solid rgba(0,0,0,0.25);
+  cursor: default;
+}
+.freq-range-seg:last-child { border-right: none; }
+.freq-range-seg.active {
+  color: #fff;
+  text-shadow: 0 0 6px currentColor;
+}
+.seg-sub  { background: rgba(120,40,200,0.3); }  .seg-sub.active  { background: rgba(120,40,200,0.75); }
+.seg-bass { background: rgba(200,40,40,0.3); }   .seg-bass.active { background: rgba(220,50,50,0.75); }
+.seg-low  { background: rgba(200,120,20,0.3); }  .seg-low.active  { background: rgba(220,140,30,0.75); }
+.seg-mid  { background: rgba(40,160,60,0.3); }   .seg-mid.active  { background: rgba(50,190,70,0.75); }
+.seg-high { background: rgba(30,100,200,0.3); }  .seg-high.active { background: rgba(50,130,230,0.75); }
+.seg-pres { background: rgba(80,60,200,0.3); }   .seg-pres.active { background: rgba(100,80,230,0.75); }
+.seg-bril { background: rgba(160,200,255,0.2); } .seg-bril.active { background: rgba(180,220,255,0.55); }
+
+.freq-stats {
+  display: flex; gap: 6px;
+}
+.freq-stat {
+  flex: 1; background: rgba(5,12,40,0.7);
+  border: 1px solid rgba(60,100,200,0.3);
+  border-radius: 3px; padding: 5px 7px;
+  text-align: center;
+}
+.freq-stat-label {
+  font-size: 8px; font-weight: 700; letter-spacing: .8px;
+  color: rgba(120,170,230,0.5); text-transform: uppercase; display: block;
+}
+.freq-stat-val {
+  font-size: 12px; font-weight: 700; font-variant-numeric: tabular-nums;
+  color: rgba(180,220,255,0.9); display: block; margin-top: 2px;
+}
+
+/* ── Legend ── */
+.legend { display: flex; flex-direction: column; gap: 9px; }
+.legend-item { display: flex; gap: 9px; align-items: flex-start; }
+.legend-molecule { flex-shrink: 0; width: 50px; height: 28px; }
+.legend-name { font-size: 11px; font-weight: 700; margin-bottom: 2px; }
+.legend-desc { font-size: 10px; color: rgba(150,190,255,0.65); line-height: 1.4; }
+.n2c { color: #72b4ff; }
+.o2c { color: #ff7872; }
+
+/* ── Physics list ── */
+.physics-list { list-style: none; display: flex; flex-direction: column; gap: 5px; }
+.physics-list li { display: flex; align-items: flex-start; gap: 7px;
+  font-size: 11px; color: rgba(150,190,255,0.7); line-height: 1.5; }
+.physics-list li .dot { width: 6px; height: 6px; border-radius: 50%;
+  flex-shrink: 0; margin-top: 5px; }
+
+/* ── Amplitude slider ── */
+.amp-control { display: flex; flex-direction: column; gap: 6px; }
+.amp-row { display: flex; align-items: center; gap: 8px; }
+.amp-label { width: 50px; font-size: 10px; font-weight: 700; color: rgba(180,220,255,0.8);
+  text-transform: uppercase; letter-spacing: .5px; flex-shrink: 0; }
+.amp-val { width: 32px; font-size: 10px; color: rgba(150,190,255,0.7);
+  text-align: right; font-variant-numeric: tabular-nums; flex-shrink: 0; }
+.amp-desc { font-size: 10px; color: rgba(120,160,220,0.5); line-height: 1.4; }
+
+input[type="range"]#ampSlider {
+  flex: 1; -webkit-appearance: none; appearance: none;
+  height: 13px;
+  background: rgba(10,25,70,0.7);
+  border-radius: 2px;
+  border: 1px solid rgba(60,100,200,0.35);
+  outline: none; cursor: pointer;
+}
+input[type="range"]#ampSlider::-webkit-slider-thumb {
+  -webkit-appearance: none; appearance: none;
+  width: 14px; height: 13px;
+  background: linear-gradient(180deg, #6aabff 0%, #2060c0 100%);
+  border-radius: 2px;
+  border: 1px solid rgba(100,160,255,0.6);
+  box-shadow: 0 1px 3px rgba(0,0,0,0.5);
+  cursor: pointer;
+}
+input[type="range"]#ampSlider::-moz-range-thumb {
+  width: 14px; height: 13px;
+  background: linear-gradient(180deg, #6aabff 0%, #2060c0 100%);
+  border-radius: 2px;
+  border: 1px solid rgba(100,160,255,0.6);
+  cursor: pointer;
+}
+
+/* ─── CANVAS AREA (right) ─────────────────────── */
+#canvasArea {
+  flex: 1; display: flex; align-items: center; justify-content: center;
+  background: transparent; position: relative; overflow: hidden; padding: 12px;
+}
+
+.canvas-win-frame {
+  display: flex; flex-direction: column;
+  border: 1px solid rgba(80,140,220,0.4);
+  border-radius: 4px;
+  overflow: hidden;
+  box-shadow: 0 4px 20px rgba(0,20,80,0.6), inset 0 1px 0 rgba(255,255,255,0.1);
+}
+
+.canvas-inner-bar {
+  height: 20px; flex-shrink: 0;
+  background: linear-gradient(180deg,
+    rgba(80,140,220,0.6) 0%,
+    rgba(30,80,170,0.8) 100%);
+  border-bottom: 1px solid rgba(80,140,220,0.4);
+  display: flex; align-items: center; padding: 0 8px;
+}
+
+.canvas-inner-title {
+  font-size: 10px; font-weight: 600;
+  color: rgba(255,255,255,0.8);
+  text-shadow: 0 1px 2px rgba(0,0,50,0.5);
+  flex: 1;
+}
+
+.canvas-inner-bar .dots { display: flex; gap: 3px; }
+.canvas-inner-bar .dots span {
+  width: 8px; height: 8px; border-radius: 50%;
+  border: 1px solid rgba(0,0,0,0.3);
+}
+.canvas-inner-bar .dots .d1 { background: #f85149; }
+.canvas-inner-bar .dots .d2 { background: #d29922; }
+.canvas-inner-bar .dots .d3 { background: #3fb950; }
+
+#mainCanvas { display: block; background: #03060e; }
+
+.canvas-overlay-idle {
+  position: absolute; inset: 0;
+  display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+  gap: 10px; pointer-events: none; transition: opacity .4s;
+}
+.canvas-overlay-idle.hidden { opacity: 0; }
+.canvas-overlay-idle .big-icon { font-size: 52px; opacity: .1; }
+.canvas-overlay-idle p { font-size: 12px; color: rgba(150,190,255,0.4);
+  text-align: center; max-width: 200px; }
+
+/* ─── TASKBAR ────────────────────────────────── */
+#taskbar {
+  height: 40px; flex-shrink: 0;
+  background: linear-gradient(180deg,
+    rgba(30,70,170,0.75) 0%,
+    rgba(10,30,100,0.90) 45%,
+    rgba(5,15,60,0.95) 100%);
+  border-top: 1px solid rgba(80,140,255,0.4);
+  display: flex; align-items: center; padding: 0 4px;
+  gap: 4px;
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  box-shadow: 0 -1px 0 rgba(255,255,255,0.1) inset;
+  position: relative;
+  z-index: 100;
+}
+
+/* Kapat / Shut Down butonu */
+#startBtn {
+  height: 30px; padding: 0 12px;
+  background: linear-gradient(180deg,
+    rgba(220,60,60,0.85) 0%,
+    rgba(180,30,30,0.95) 50%,
+    rgba(140,15,15,1) 100%);
+  border: 1px solid rgba(200,40,40,0.8);
+  border-radius: 14px;
+  color: #fff; font-family: var(--font); font-size: 12px; font-weight: 700;
+  cursor: pointer; display: flex; align-items: center; gap: 5px;
+  text-shadow: 0 1px 2px rgba(0,0,0,0.5);
+  box-shadow: 0 1px 0 rgba(255,255,255,0.3) inset, 0 2px 6px rgba(0,0,0,0.4);
+  transition: filter .1s;
+  position: relative; overflow: hidden;
+  white-space: nowrap;
+}
+#startBtn::before {
+  content: '';
+  position: absolute; left: 0; right: 0; top: 0; height: 50%;
+  background: linear-gradient(180deg,rgba(255,255,255,0.25) 0%,transparent 100%);
+}
+#startBtn:hover { filter: brightness(1.15); }
+#startBtn:active { filter: brightness(0.85); }
+
+.taskbar-sep {
+  width: 1px; height: 22px;
+  background: rgba(80,140,220,0.3);
+  margin: 0 4px;
+}
+
+/* Taskbar uygulama butonu (logo + başlık) */
+.taskbar-item {
+  height: 30px; padding: 0 10px;
+  background: linear-gradient(180deg,
+    rgba(80,140,220,0.45) 0%,
+    rgba(20,60,150,0.7) 100%);
+  border: 1px solid rgba(80,140,220,0.4);
+  border-radius: 3px;
+  color: rgba(200,225,255,0.9); font-family: var(--font); font-size: 11px; font-weight: 600;
+  display: flex; align-items: center; gap: 5px;
+  cursor: pointer; user-select: none;
+  box-shadow: 0 1px 0 rgba(255,255,255,0.15) inset;
+  white-space: nowrap; transition: filter .1s;
+}
+.taskbar-item:hover { filter: brightness(1.25); }
+.taskbar-item:active { filter: brightness(0.85); }
+
+.taskbar-item.win-active {
+  background: linear-gradient(180deg,
+    rgba(20,50,140,0.8) 0%, rgba(40,90,200,0.6) 100%);
+  box-shadow: inset 0 1px 3px rgba(0,0,0,0.5), 0 1px 0 rgba(255,255,255,0.08) inset;
+  border-color: rgba(60,110,200,0.6);
+}
+
+/* Taskbar logo (küçük, item içinde) */
+.taskbar-item-logo {
+  height: 20px; width: 20px; object-fit: contain;
+  border-radius: 2px; display: none;
+}
+
+.taskbar-spacer { flex: 1; }
+
+#clock {
+  color: rgba(200,225,255,0.85);
+  font-size: 11px; font-weight: 600;
+  text-align: right; padding: 0 10px;
+  line-height: 1.3;
+  white-space: nowrap;
+}
+
+/* ─── DESKTOP WALLPAPER ─────────────────────── */
+#desktopBg {
+  position: absolute; inset: 0; bottom: 40px;
+  display: flex; align-items: center; justify-content: center;
+  opacity: 0; pointer-events: none;
+  transition: opacity 0.28s ease;
+  overflow: hidden;
+}
+#desktopBg.visible { opacity: 1; pointer-events: all; }
+
+/* Masaüstü arka plan resmi */
+#wallpaperImg {
+  position: absolute; inset: 0;
+  width: 100%; height: 100%;
+  object-fit: cover;
+  display: none;
+}
+
+/* Masaüstü resim yükleme alanı — resim yokken görünür */
+#wallpaperPlaceholder {
+  position: absolute; inset: 0;
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  gap: 12px; cursor: pointer;
+}
+#wallpaperPlaceholder input[type="file"] {
+  position: absolute; inset: 0; opacity: 0; cursor: pointer; width: 100%; height: 100%;
+}
+.wp-icon { font-size: 48px; opacity: 0.18; }
+.wp-label { font-size: 13px; color: rgba(180,210,255,0.35); font-weight: 600; }
+.wp-hint  { font-size: 11px; color: rgba(150,180,220,0.2); }
+
+/* ─── WIN7 SCROLLBAR GLOBAL ──────────────────── */
+::-webkit-scrollbar { width: 8px; }
+::-webkit-scrollbar-track { background: rgba(10,25,70,0.5); }
+::-webkit-scrollbar-thumb {
+  background: linear-gradient(180deg,#4a80d0,#2050a0);
+  border-radius: 4px;
+}
+</style>
+</head>
+<body>
+<div id="desktop">
+
+  <!-- ── MASAÜSTÜ ARKA PLANI ── -->
+  <div id="desktopBg">
+    <!-- Windows 7 masaüstü resmi buraya gelecek -->
+    <img id="wallpaperImg" alt="Masaüstü" />
+    <!-- Resim yüklenmemişse gösterilen alan -->
+    <div id="wallpaperPlaceholder">
+      <input type="file" id="wallpaperInput" accept="image/*" />
+      <div class="wp-icon">🖼️</div>
+      <div class="wp-label">Masaüstü resmi yükle</div>
+      <div class="wp-hint">Buraya tıkla veya resim sürükle</div>
+    </div>
+  </div>
+
+  <!-- ── MAIN WINDOW ── -->
+  <div id="mainWindow">
+    <!-- Title Bar -->
+    <div id="titleBar">
+      <div class="win-icon">🔊</div>
+      <div class="win-title">Ses Dalgası Simülasyonu — Hava Molekülü Görselleştirici</div>
+      <div class="win-buttons">
+        <button class="win-btn win-btn-min" id="minBtn" title="Küçült">─</button>
+        <button class="win-btn win-btn-max" title="Büyüt">□</button>
+        <button class="win-btn win-btn-close" id="closeBtn" title="Kapat">✕</button>
+      </div>
+    </div>
+
+    <!-- Window Body -->
+    <div id="windowBody">
+
+      <!-- Control Panel -->
+      <aside id="controls">
+
+        <div class="section">
+          <div class="section-title">Site Logosu</div>
+          <div class="logo-zone" id="logoZone">
+            <input type="file" id="logoInput" accept="image/*" />
+            <img id="logoImg" alt="Logo" />
+            <div class="logo-placeholder" id="logoPlaceholder">
+              <span>🖼️</span>
+              Logonuzu buraya yükleyin
+            </div>
+          </div>
+        </div>
+
+        <div class="section">
+          <div class="section-title">Ses Dosyası</div>
+          <div class="upload-zone" id="uploadZone">
+            <input type="file" id="fileInput" accept=".mp3,.wav,audio/mpeg,audio/wav" />
+            <span class="u-icon">🎵</span>
+            <span class="u-label">Dosya seç veya sürükle</span>
+            <span class="u-hint">MP3 &amp; WAV desteklenir</span>
+          </div>
+          <div class="file-name" id="fileName"></div>
+        </div>
+
+        <div class="section">
+          <div class="section-title">Kontrol</div>
+          <button id="runBtn" disabled>
+            <span id="btnIcon">▶</span>
+            <span id="btnText">Çalıştır (Run)</span>
+          </button>
+          <div class="status-box">
+            <div class="status-dot" id="statusDot"></div>
+            <span id="statusText">Ses dosyası yükleyin</span>
+          </div>
+        </div>
+
+        <div class="section">
+          <div class="section-title">Canlı Frekans Analizi</div>
+          <div class="freq-display">
+
+            <!-- Ana Hz göstergesi -->
+            <div class="hz-meter">
+              <span class="hz-big" id="hzBig">—</span>
+              <span class="hz-unit">Hz</span>
+              <span class="hz-note" id="hzNote">Ses dosyası yükleyin</span>
+            </div>
+
+            <!-- Mini spektrum analizörü -->
+            <canvas id="spectrumCanvas" height="60"></canvas>
+
+            <!-- Frekans bant göstergesi -->
+            <div class="freq-range-bar">
+              <div class="freq-range-seg seg-sub"  id="segSub">SUB</div>
+              <div class="freq-range-seg seg-bass" id="segBass">BAS</div>
+              <div class="freq-range-seg seg-low"  id="segLow">ALT</div>
+              <div class="freq-range-seg seg-mid"  id="segMid">MID</div>
+              <div class="freq-range-seg seg-high" id="segHigh">ÜST</div>
+              <div class="freq-range-seg seg-pres" id="segPres">PRE</div>
+              <div class="freq-range-seg seg-bril" id="segBril">TİZ</div>
+            </div>
+
+            <!-- İstatistikler: min / max / RMS -->
+            <div class="freq-stats">
+              <div class="freq-stat">
+                <span class="freq-stat-label">Min</span>
+                <span class="freq-stat-val" id="statMin">—</span>
+              </div>
+              <div class="freq-stat">
+                <span class="freq-stat-label">Peak</span>
+                <span class="freq-stat-val" id="statPeak">—</span>
+              </div>
+              <div class="freq-stat">
+                <span class="freq-stat-label">Max</span>
+                <span class="freq-stat-val" id="statMax">—</span>
+              </div>
+            </div>
+
+          </div>
+        </div>
+
+        <div class="section">
+          <div class="section-title">Molekül Lejantı</div>
+          <div class="legend">
+            <div class="legend-item">
+              <svg class="legend-molecule" viewBox="0 0 50 28" xmlns="http://www.w3.org/2000/svg">
+                <circle cx="10" cy="14" r="7.5" fill="#1a3a6e" stroke="#58a6ff" stroke-width="1.3"/>
+                <text x="10" y="18" text-anchor="middle" fill="#72b4ff" font-size="6.5" font-weight="bold">N</text>
+                <circle cx="40" cy="14" r="7.5" fill="#1a3a6e" stroke="#58a6ff" stroke-width="1.3"/>
+                <text x="40" y="18" text-anchor="middle" fill="#72b4ff" font-size="6.5" font-weight="bold">N</text>
+                <line x1="18" y1="11" x2="32" y2="11" stroke="#58a6ff" stroke-width="1.2"/>
+                <line x1="18" y1="14" x2="32" y2="14" stroke="#58a6ff" stroke-width="1.2"/>
+                <line x1="18" y1="17" x2="32" y2="17" stroke="#58a6ff" stroke-width="1.2"/>
+              </svg>
+              <div>
+                <div class="legend-name n2c">N₂ — Azot (%78)</div>
+                <div class="legend-desc">2 atom, üçlü bağ. Mavi.</div>
+              </div>
+            </div>
+            <div class="legend-item">
+              <svg class="legend-molecule" viewBox="0 0 50 28" xmlns="http://www.w3.org/2000/svg">
+                <circle cx="10" cy="14" r="7.5" fill="#6e1a1a" stroke="#f85149" stroke-width="1.3"/>
+                <text x="10" y="18" text-anchor="middle" fill="#ff7872" font-size="6.5" font-weight="bold">O</text>
+                <circle cx="40" cy="14" r="7.5" fill="#6e1a1a" stroke="#f85149" stroke-width="1.3"/>
+                <text x="40" y="18" text-anchor="middle" fill="#ff7872" font-size="6.5" font-weight="bold">O</text>
+                <line x1="18" y1="12" x2="32" y2="12" stroke="#f85149" stroke-width="1.2"/>
+                <line x1="18" y1="16" x2="32" y2="16" stroke="#f85149" stroke-width="1.2"/>
+              </svg>
+              <div>
+                <div class="legend-name o2c">O₂ — Oksijen (%22)</div>
+                <div class="legend-desc">2 atom, çift bağ. Kırmızı.</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="section">
+          <div class="section-title">Genlik (Amplitude)</div>
+          <div class="amp-control">
+            <div class="amp-row">
+              <span class="amp-label">Mesafe</span>
+              <input type="range" id="ampSlider" min="0" max="100" value="60" />
+              <span class="amp-val" id="ampVal">60%</span>
+            </div>
+            <div class="amp-desc">Moleküllerin ileri-geri gitme uzaklığını ayarlar</div>
+          </div>
+        </div>
+
+        <div class="section">
+          <div class="section-title">Ses Etkisi Haritası</div>
+          <ul class="physics-list">
+            <li><span class="dot" style="background:#f85149"></span>
+              <span><strong style="color:#ff7872">Bas:</strong> Büyük genlik — moleküller geniş aralıkta salınır</span></li>
+            <li><span class="dot" style="background:#58a6ff"></span>
+              <span><strong style="color:#72b4ff">Tiz:</strong> Yüksek frekans — moleküller çok daha hızlı ileri-geri hareket eder</span></li>
+          </ul>
+        </div>
+
+      </aside>
+
+      <!-- Canvas Area -->
+      <main id="canvasArea">
+        <div style="position:relative; display:flex; flex-direction:column;">
+          <div class="canvas-win-frame">
+            <div class="canvas-inner-bar">
+              <div class="dots">
+                <span class="d3"></span>
+                <span class="d2"></span>
+                <span class="d1"></span>
+              </div>
+              &nbsp;
+              <span class="canvas-inner-title">Molekül Görselleştirici — 700×700 px</span>
+            </div>
+            <div style="position:relative;">
+              <canvas id="mainCanvas" width="700" height="700"></canvas>
+              <div class="canvas-overlay-idle" id="idleOverlay">
+                <div class="big-icon">🌬️</div>
+                <p>Bir ses dosyası yükleyip<br><strong>Run</strong> butonuna basın</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </main>
+
+    </div><!-- /windowBody -->
+  </div><!-- /mainWindow -->
+
+  <!-- ── TASKBAR ── -->
+  <div id="taskbar">
+    <!-- Kapat / Shut Down butonu -->
+    <button id="startBtn" title="Siteyi kapat">⏻ Kapat</button>
+    <div class="taskbar-sep"></div>
+    <!-- Uygulama butonu: logo + başlık, tıklayınca pencere açılır/kapanır -->
+    <div class="taskbar-item win-active" id="taskbarItem">
+      <img class="taskbar-item-logo" id="taskbarLogo" alt="Logo" />
+      <span id="taskbarIcon">🔊</span>
+      Ses Dalgası Simülasyonu
+    </div>
+    <div class="taskbar-spacer"></div>
+    <div id="clock">00:00<br>00.00.2007</div>
+  </div>
+
+</div><!-- /desktop -->
+
+<script>
+// =====================================================================
+//  SES DALGASI SİMÜLASYONU
+//  Windows 7 Aero UI
+// =====================================================================
+
+const canvas = document.getElementById('mainCanvas');
+const ctx    = canvas.getContext('2d', { alpha: false });
+const W = 700, H = 700;
+
+// ── UI refs ──
+const fileInput   = document.getElementById('fileInput');
+const uploadZone  = document.getElementById('uploadZone');
+const fileNameEl  = document.getElementById('fileName');
+const runBtn      = document.getElementById('runBtn');
+const btnIcon     = document.getElementById('btnIcon');
+const btnText     = document.getElementById('btnText');
+const statusDot   = document.getElementById('statusDot');
+const statusText  = document.getElementById('statusText');
+const idleOverlay = document.getElementById('idleOverlay');
+
+// Frekans UI
+const hzBig      = document.getElementById('hzBig');
+const hzNote     = document.getElementById('hzNote');
+const statMin    = document.getElementById('statMin');
+const statPeak   = document.getElementById('statPeak');
+const statMax    = document.getElementById('statMax');
+const specCvs    = document.getElementById('spectrumCanvas');
+const specCtx    = specCvs.getContext('2d');
+const segIds     = ['segSub','segBass','segLow','segMid','segHigh','segPres','segBril'];
+// Hz sınırları: Sub<60, Bass<250, Low-mid<500, Mid<2k, Upper-mid<4k, Presence<8k, Brilliance<20k
+const SEG_LIMITS = [60, 250, 500, 2000, 4000, 8000, 20000];
+
+// Oturum frekans istatistikleri
+let sessionMinHz = Infinity, sessionMaxHz = 0, sessionPeakHz = 0, sessionPeakAmp = 0;
+
+// Hz yumuşatma
+let smoothHz = 0;
+
+// =====================================================================
+//  SPRITE ÖN-İŞLEME
+// =====================================================================
+const ATOM_R  = 7;
+const BOND_LEN = 18;
+const HALF    = BOND_LEN / 2;
+const PAD     = ATOM_R + 3;
+const SW      = (HALF + ATOM_R + PAD) * 2;
+const SH      = (ATOM_R + PAD) * 2;
+const CX      = SW / 2;
+const CY      = SH / 2;
+
+function makeSprite(isN2) {
+  const oc = document.createElement('canvas');
+  oc.width = Math.ceil(SW); oc.height = Math.ceil(SH);
+  const c = oc.getContext('2d');
+
+  const strokeC = isN2 ? '#58a6ff' : '#f85149';
+  const fillC   = isN2 ? '#1e3d7a' : '#7a1e1e';
+  const bonds   = isN2 ? 3 : 2;
+  const label   = isN2 ? 'N' : 'O';
+  const bondSep = isN2 ? 3.2 : 4.2;
+  const yStart  = -(bonds - 1) * bondSep / 2;
+
+  c.strokeStyle = strokeC; c.lineWidth = 1.5; c.lineCap = 'round';
+  for (let b = 0; b < bonds; b++) {
+    const oy = yStart + b * bondSep;
+    c.beginPath(); c.moveTo(CX - HALF, CY + oy); c.lineTo(CX + HALF, CY + oy); c.stroke();
+  }
+
+  function drawAtom(ax, ay) {
+    c.beginPath(); c.arc(ax, ay, ATOM_R, 0, Math.PI * 2);
+    c.fillStyle = fillC; c.fill();
+    c.strokeStyle = strokeC; c.lineWidth = 1.3; c.stroke();
+    c.beginPath(); c.arc(ax - 2, ay - 2, ATOM_R * 0.38, 0, Math.PI * 2);
+    c.fillStyle = 'rgba(255,255,255,0.2)'; c.fill();
+    c.fillStyle = strokeC;
+    c.font = 'bold 6.5px sans-serif';
+    c.textAlign = 'center'; c.textBaseline = 'middle';
+    c.fillText(label, ax, ay + 0.5);
+  }
+
+  drawAtom(CX - HALF - ATOM_R * 0.1, CY);
+  drawAtom(CX + HALF + ATOM_R * 0.1, CY);
+  return oc;
+}
+
+const spriteN2 = makeSprite(true);
+const spriteO2 = makeSprite(false);
+const SHW = SW / 2, SHH = SH / 2;
+
+// =====================================================================
+//  MOLEKÜLLER
+// =====================================================================
+const COLS = 15, ROWS = 15, TOTAL = COLS * ROWS;
+const CELL_W = W / COLS, CELL_H = H / ROWS;
+
+const molecules = [];
+for (let r = 0; r < ROWS; r++) {
+  for (let c = 0; c < COLS; c++) {
+    const idx = r * COLS + c;
+    molecules.push({
+      isN2:    idx < Math.round(TOTAL * 0.78),
+      baseX:   c * CELL_W + CELL_W / 2,
+      baseY:   r * CELL_H + CELL_H / 2,
+      angle:   Math.random() * Math.PI * 2,
+      phaseX:  (c / COLS) * Math.PI * 2,
+      microPh: Math.random() * Math.PI * 2,
+    });
+  }
+}
+
+// Karıştır
+for (let i = TOTAL - 1; i > 0; i--) {
+  const j = (Math.random() * (i + 1)) | 0;
+  [molecules[i].isN2, molecules[j].isN2] = [molecules[j].isN2, molecules[i].isN2];
+}
+
+// =====================================================================
+//  WEB AUDIO
+// =====================================================================
+let audioCtx = null, analyser = null, source = null, audioBuffer = null;
+let isPlaying = false, animFrameId = null, startTime = 0;
+let freqData = new Uint8Array(128);
+
+// Düzleştirilmiş değerler
+let sBass = 0, sTreb = 0;
+
+// Amplitude slider
+let amplitudeScale = 0.60; // default %60
+
+function getAudioCtx() {
+  if (!audioCtx) {
+    audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    analyser = audioCtx.createAnalyser();
+    analyser.fftSize = 256;
+    analyser.smoothingTimeConstant = 0.68;
+    freqData = new Uint8Array(analyser.frequencyBinCount);
+    analyser.connect(audioCtx.destination);
+  }
+  return audioCtx;
+}
+
+function updateFreqBands() {
+  if (!analyser) return;
+  analyser.getByteFrequencyData(freqData);
+
+  const N = freqData.length; // 128 bins (FFT 256)
+
+  // ── Animasyon için bas/tiz değerleri ──
+  // sampleRate genellikle 44100, FFT=256 → binSize ≈ 172.3 Hz
+  // Bas : bin 0–1  (0–344 Hz)
+  // Tiz : bin 23–115 (3967–19816 Hz)
+  let bs = 0, ts = 0;
+  for (let i = 0; i <= 1;   i++) bs += freqData[i];
+  for (let i = 23; i <= 115; i++) ts += freqData[i];
+
+  let rawB = Math.min(1, Math.pow(bs / (2 * 255),  0.62) * 1.35);
+  let rawT = Math.min(1, Math.pow(ts / (93 * 255), 0.55) * 1.50);
+
+  const a = 0.18;
+  sBass = sBass + a * (rawB - sBass);
+  sTreb = sTreb + a * (rawT - sTreb);
+}
+
+// =====================================================================
+//  DOMINANT FREKANS HESAPLAMA (Hz cinsinden, hassas)
+// =====================================================================
+function getDominantHz() {
+  if (!analyser || !audioCtx) return 0;
+
+  const sampleRate = audioCtx.sampleRate;           // örn. 44100
+  const binSize    = sampleRate / analyser.fftSize;  // Hz / bin
+
+  // En yüksek genlikli bin
+  let maxAmp = 0, maxBin = 0;
+  const len = freqData.length;
+  for (let i = 1; i < len - 1; i++) {
+    if (freqData[i] > maxAmp) { maxAmp = freqData[i]; maxBin = i; }
+  }
+
+  if (maxAmp < 8) return 0; // sessizlik eşiği
+
+  // Parabolik interpolasyon — gerçek tepe noktasını hassas bul
+  const L = freqData[maxBin - 1] || 0;
+  const C = freqData[maxBin];
+  const R = freqData[maxBin + 1] || 0;
+  const denom = L - 2 * C + R;
+  const offset = denom !== 0 ? -0.5 * (R - L) / denom : 0;
+  const refinedBin = maxBin + offset;
+
+  return refinedBin * binSize; // Hz
+}
+
+// Nota ismi (A4 = 440 Hz, eşit tampere)
+function hzToNote(hz) {
+  if (hz < 20) return '';
+  const noteNames = ['C','C#','D','D#','E','F','F#','G','G#','A','A#','B'];
+  const semitones = 12 * Math.log2(hz / 440) + 69; // MIDI nota numarası
+  const midi = Math.round(semitones);
+  const name = noteNames[((midi % 12) + 12) % 12];
+  const octave = Math.floor(midi / 12) - 1;
+  const cents = Math.round((semitones - midi) * 100);
+  const centsStr = cents === 0 ? '' : (cents > 0 ? ' +' + cents + '¢' : ' ' + cents + '¢');
+  return name + octave + centsStr;
+}
+
+// Hz'den frekans bandı adı
+function hzToBandName(hz) {
+  if (hz <   60) return 'Sub-bas (< 60 Hz)';
+  if (hz <  250) return 'Bas (60–250 Hz)';
+  if (hz <  500) return 'Alt-mid (250–500 Hz)';
+  if (hz < 2000) return 'Orta (500–2k Hz)';
+  if (hz < 4000) return 'Üst-mid (2k–4k Hz)';
+  if (hz < 8000) return 'Presence (4k–8k Hz)';
+  return 'Tiz (8k–20k Hz)';
+}
+
+// Bant segment aktifliği güncelle
+function updateSegments(hz) {
+  const segs = segIds.map(id => document.getElementById(id));
+  segs.forEach(el => el && el.classList.remove('active'));
+  let activeIdx = -1;
+  for (let i = 0; i < SEG_LIMITS.length; i++) {
+    if (hz < SEG_LIMITS[i]) { activeIdx = i; break; }
+  }
+  if (activeIdx >= 0 && segs[activeIdx]) segs[activeIdx].classList.add('active');
+}
+
+// Spektrum canvas çiz
+function drawSpectrum() {
+  const cw = specCvs.width, ch = specCvs.height;
+  specCtx.clearRect(0, 0, cw, ch);
+
+  const N = freqData.length;
+  // Logaritmik ölçek: 20Hz → 20kHz
+  const barCount = Math.min(64, cw);
+  const bw = cw / barCount;
+
+  for (let b = 0; b < barCount; b++) {
+    // Logaritmik frekans haritası
+    const tStart = b / barCount;
+    const tEnd   = (b + 1) / barCount;
+    const fStart = 20 * Math.pow(1000, tStart); // 20→20000 Hz log
+    const fEnd   = 20 * Math.pow(1000, tEnd);
+
+    // Samplerate / FFT ile bin hesapla
+    const sampleRate = audioCtx ? audioCtx.sampleRate : 44100;
+    const binSize    = sampleRate / (analyser ? analyser.fftSize : 256);
+    const binStart   = Math.max(0, Math.floor(fStart / binSize));
+    const binEnd     = Math.min(N - 1, Math.ceil(fEnd / binSize));
+
+    let maxV = 0;
+    for (let i = binStart; i <= binEnd; i++) {
+      if (freqData[i] > maxV) maxV = freqData[i];
+    }
+
+    const norm  = maxV / 255;
+    const barH  = norm * ch;
+
+    // Renk: düşük frekans kırmızı → yüksek frekans mavi
+    const hue = Math.round(240 - tStart * 200); // 240(mavi) → 40(turuncu)
+    const alpha = 0.55 + norm * 0.45;
+    specCtx.fillStyle = `hsla(${hue},80%,55%,${alpha})`;
+    specCtx.fillRect(b * bw, ch - barH, bw - 1, barH);
+
+    // Parlak üst kenar
+    specCtx.fillStyle = `hsla(${hue},90%,85%,${norm * 0.8})`;
+    specCtx.fillRect(b * bw, ch - barH, bw - 1, 2);
+  }
+}
+
+// =====================================================================
+//  FREKANS UI GÜNCELLE
+// =====================================================================
+
+// =====================================================================
+//  ANİMASYON
+// =====================================================================
+let t = 0, uiTick = 0;
+
+function animate() {
+  animFrameId = requestAnimationFrame(animate);
+  t += 0.016;
+
+  updateFreqBands();
+
+  if (++uiTick >= 3) { uiTick = 0; updateFreqUI(); }
+
+  ctx.fillStyle = '#03060e';
+  ctx.fillRect(0, 0, W, H);
+
+  const bass   = sBass;
+  const treble = sTreb;
+
+  // ── Ses fiziği ──
+  // Bas:  büyük genlik, düşük frekans → geniş ama yavaş ileri-geri
+  // Tiz:  küçük genlik, yüksek frekans → dar ama çok hızlı ileri-geri
+  // (Tıpkı gerçek ses dalgasında: f arttıkça molekül daha hızlı salınır)
+
+  // Dalga frekansı: bas tabanlı + tiz ekstra frekans katar
+  // Tiz 0→1 arasında frekansı 1.5'ten ~16'ya taşır
+  const waveFreq = 1.5 + treble * 14.5;
+
+  // Genlik: bas büyük mesafe verir, tiz küçük ama ek mesafe katar
+  // amplitudeScale kullanıcı slider'ından gelir
+  const bassAmp  = bass   * 55 * amplitudeScale;
+  const trebAmp  = treble * 20 * amplitudeScale;
+  const waveAmp  = bassAmp + trebAmp;
+
+  for (let i = 0; i < TOTAL; i++) {
+    const m = molecules[i];
+
+    // Boyuna dalga (X ekseni) — frekans tize, genlik basa göre
+    const waveX = waveAmp * Math.sin(waveFreq * t - m.phaseX * 1.2);
+
+    const x = m.baseX + waveX;
+    const y = m.baseY;
+
+    // Sabit dönme hızı — ses etkilemiyor
+    m.angle += 0.005;
+
+    ctx.save();
+    ctx.translate(x, y);
+    ctx.rotate(m.angle);
+    ctx.drawImage(m.isN2 ? spriteN2 : spriteO2, -SHW, -SHH);
+    ctx.restore();
+  }
+
+  // Zaman damgası — sağ alt köşe
+  if (audioCtx) {
+    const elapsed = audioCtx.currentTime - startTime;
+    const min = (elapsed / 60) | 0;
+    const sec = (elapsed % 60) | 0;
+    ctx.fillStyle = 'rgba(120,160,220,0.35)';
+    ctx.font = '11px monospace';
+    ctx.textAlign = 'right'; ctx.textBaseline = 'bottom';
+    ctx.fillText('▶ ' + min + ':' + String(sec).padStart(2, '0'), W - 8, H - 8);
+  }
+}
+
+// =====================================================================
+//  BAŞLANGIÇ EKRANI
+// =====================================================================
+function drawIdleScreen() {
+  ctx.fillStyle = '#03060e';
+  ctx.fillRect(0, 0, W, H);
+  for (let i = 0; i < TOTAL; i++) {
+    const m = molecules[i];
+    ctx.save();
+    ctx.translate(m.baseX, m.baseY);
+    ctx.rotate(m.angle);
+    ctx.drawImage(m.isN2 ? spriteN2 : spriteO2, -SHW, -SHH);
+    ctx.restore();
+  }
+}
+
+// =====================================================================
+//  UI HELPERS
+// =====================================================================
+function updateFreqUI() {
+  // Spektrum canvas boyutunu ayarla (tek seferlik)
+  if (specCvs.offsetWidth > 0 && specCvs.width !== specCvs.offsetWidth) {
+    specCvs.width = specCvs.offsetWidth;
+  }
+
+  drawSpectrum();
+
+  const hz = getDominantHz();
+  if (hz < 20) {
+    hzBig.textContent  = '—';
+    hzNote.textContent = 'Sessizlik';
+    updateSegments(-1);
+    return;
+  }
+
+  // Exponential smoothing — ani sıçramaları önler
+  smoothHz = smoothHz === 0 ? hz : smoothHz * 0.75 + hz * 0.25;
+  const displayHz = Math.round(smoothHz);
+
+  // Büyük sayı gösterimi: 1000+ → k
+  hzBig.textContent = displayHz >= 1000
+    ? (displayHz / 1000).toFixed(displayHz >= 10000 ? 1 : 2) + 'k'
+    : String(displayHz);
+
+  // Nota adı + frekans bandı
+  hzNote.textContent = hzToNote(smoothHz) + '  ·  ' + hzToBandName(smoothHz);
+
+  // Bant segmentleri
+  updateSegments(smoothHz);
+
+  // Oturum istatistikleri
+  if (hz > 20) {
+    if (hz < sessionMinHz) { sessionMinHz = hz; statMin.textContent = Math.round(hz) + ' Hz'; }
+    if (hz > sessionMaxHz) { sessionMaxHz = hz; statMax.textContent = Math.round(hz) + ' Hz'; }
+    const curAmp = freqData.reduce((m, v) => Math.max(m, v), 0);
+    if (curAmp > sessionPeakAmp) {
+      sessionPeakAmp = curAmp;
+      sessionPeakHz  = hz;
+      statPeak.textContent = Math.round(hz) + ' Hz';
+    }
+  }
+}
+
+function setStatus(type, msg) {
+  statusText.textContent = msg;
+  statusDot.className = 'status-dot'
+    + (type === 'active' ? ' active' : type === 'error' ? ' error' : '');
+}
+
+// =====================================================================
+//  PENCERE KÜÇÜLTME / GERİ AÇMA
+// =====================================================================
+const mainWindow  = document.getElementById('mainWindow');
+const desktopBg   = document.getElementById('desktopBg');
+const minBtn      = document.getElementById('minBtn');
+const taskbarItem = document.getElementById('taskbarItem');
+
+function minimizeWindow() {
+  mainWindow.classList.add('minimized');
+  desktopBg.classList.add('visible');
+  taskbarItem.classList.remove('win-active');
+}
+
+function restoreWindow() {
+  mainWindow.classList.remove('minimized');
+  desktopBg.classList.remove('visible');
+  taskbarItem.classList.add('win-active');
+}
+
+minBtn.addEventListener('click', () => {
+  if (mainWindow.classList.contains('minimized')) restoreWindow();
+  else minimizeWindow();
+});
+
+taskbarItem.addEventListener('click', () => {
+  if (mainWindow.classList.contains('minimized')) restoreWindow();
+  else minimizeWindow();
+});
+
+// ── Kapat butonu (title bar X) — pencereyi minimize eder ──
+document.getElementById('closeBtn').addEventListener('click', minimizeWindow);
+
+// =====================================================================
+//  KAPAT / SHUT DOWN (taskbar)
+// =====================================================================
+document.getElementById('startBtn').addEventListener('click', () => {
+  // Sayfadan çık
+  if (!window.close()) {
+    // window.close() etkisiz olduysa (doğrudan açılmış tab) boş sayfaya yönlendir
+    window.location.href = 'about:blank';
+  }
+});
+
+// =====================================================================
+//  AMPLITUDE SLIDER
+// =====================================================================
+const ampSlider = document.getElementById('ampSlider');
+const ampValEl  = document.getElementById('ampVal');
+
+ampSlider.addEventListener('input', () => {
+  amplitudeScale = ampSlider.value / 100;
+  ampValEl.textContent = ampSlider.value + '%';
+});
+
+// =====================================================================
+//  LOGO YÜKLEME
+// =====================================================================
+const logoInput       = document.getElementById('logoInput');
+const logoImg         = document.getElementById('logoImg');
+const logoPlaceholder = document.getElementById('logoPlaceholder');
+const taskbarLogo     = document.getElementById('taskbarLogo');
+const taskbarIcon     = document.getElementById('taskbarIcon');
+
+logoInput.addEventListener('change', e => {
+  const file = e.target.files[0];
+  if (!file || !file.type.startsWith('image/')) return;
+  const reader = new FileReader();
+  reader.onload = ev => {
+    const src = ev.target.result;
+    // Panel içi logo
+    logoImg.src = src;
+    logoImg.style.display = 'block';
+    logoPlaceholder.style.display = 'none';
+    // Taskbar logosu (buton içine)
+    taskbarLogo.src = src;
+    taskbarLogo.style.display = 'block';
+    // Emoji ikonu gizle
+    taskbarIcon.style.display = 'none';
+  };
+  reader.readAsDataURL(file);
+});
+
+// =====================================================================
+//  MASAÜSTÜ ARKA PLAN RESMİ YÜKLEME
+// =====================================================================
+document.getElementById('wallpaperInput').addEventListener('change', e => {
+  const file = e.target.files[0];
+  if (!file || !file.type.startsWith('image/')) return;
+  const reader = new FileReader();
+  reader.onload = ev => {
+    const wallpaperImg = document.getElementById('wallpaperImg');
+    wallpaperImg.src = ev.target.result;
+    wallpaperImg.style.display = 'block';
+    document.getElementById('wallpaperPlaceholder').style.display = 'none';
+  };
+  reader.readAsDataURL(file);
+});
+
+// =====================================================================
+//  DOSYA YÜKLEME
+// =====================================================================
+fileInput.addEventListener('change', async e => { const f = e.target.files[0]; if (f) await loadFile(f); });
+uploadZone.addEventListener('dragover', e => { e.preventDefault(); uploadZone.classList.add('drag-over'); });
+uploadZone.addEventListener('dragleave', () => uploadZone.classList.remove('drag-over'));
+uploadZone.addEventListener('drop', async e => {
+  e.preventDefault(); uploadZone.classList.remove('drag-over');
+  const f = e.dataTransfer.files[0]; if (f) await loadFile(f);
+});
+
+async function loadFile(file) {
+  const ext = file.name.split('.').pop().toLowerCase();
+  if (ext !== 'mp3' && ext !== 'wav' && !file.type.startsWith('audio/')) {
+    setStatus('error', 'Sadece MP3 ve WAV desteklenir'); return;
+  }
+  if (isPlaying) stopAudio();
+  setStatus('', 'Yükleniyor...');
+  fileNameEl.textContent = '🎵 ' + file.name;
+  fileNameEl.style.display = 'block';
+  try {
+    const ac  = getAudioCtx();
+    const buf = await file.arrayBuffer();
+    audioBuffer = await ac.decodeAudioData(buf);
+    runBtn.disabled = false;
+    setStatus('', 'Hazır: ' + file.name);
+  } catch (err) {
+    setStatus('error', 'Okunamadı: ' + err.message);
+    runBtn.disabled = true;
+  }
+}
+
+// =====================================================================
+//  ÇALIŞTIR / DURDUR
+// =====================================================================
+runBtn.addEventListener('click', () => isPlaying ? stopAudio() : startAudio());
+
+function startAudio() {
+  if (!audioBuffer) return;
+  const ac = getAudioCtx();
+  if (ac.state === 'suspended') ac.resume();
+  source = ac.createBufferSource();
+  source.buffer = audioBuffer;
+  source.connect(analyser);
+  source.start(0);
+  startTime = ac.currentTime;
+  isPlaying = true;
+  source.onended = () => { if (isPlaying) stopAudio(true); };
+  btnIcon.textContent = '⏹'; btnText.textContent = 'Durdur';
+  runBtn.classList.add('playing');
+  setStatus('active', 'Simülasyon çalışıyor...');
+  idleOverlay.classList.add('hidden');
+  if (animFrameId) cancelAnimationFrame(animFrameId);
+  animate();
+}
+
+function stopAudio(ended = false) {
+  isPlaying = false;
+  try { if (source) { source.stop(); source.disconnect(); } } catch (_) {}
+  source = null;
+  if (animFrameId) { cancelAnimationFrame(animFrameId); animFrameId = null; }
+  sBass = sTreb = 0; smoothHz = 0;
+  hzBig.textContent  = '—';
+  hzNote.textContent = 'Durduruldu';
+  updateSegments(-1);
+  specCtx.clearRect(0, 0, specCvs.width, specCvs.height);
+  btnIcon.textContent = '▶'; btnText.textContent = 'Çalıştır (Run)';
+  runBtn.classList.remove('playing');
+  setStatus('', ended ? 'Ses tamamlandı' : 'Durduruldu');
+  idleOverlay.classList.remove('hidden');
+  drawIdleScreen();
+}
+
+// =====================================================================
+//  CANVAS BOYUTLANDIRMA
+// =====================================================================
+function resizeCanvas() {
+  const area = document.getElementById('canvasArea');
+  const sz   = Math.max(260, Math.min(area.clientWidth - 24, area.clientHeight - 52, 700));
+  canvas.style.width  = sz + 'px';
+  canvas.style.height = sz + 'px';
+}
+window.addEventListener('resize', () => { resizeCanvas(); if (!isPlaying) drawIdleScreen(); });
+
+// =====================================================================
+//  SAAT (Windows 7 taskbar clock)
+// =====================================================================
+function updateClock() {
+  const now = new Date();
+  const hh  = String(now.getHours()).padStart(2, '0');
+  const mm  = String(now.getMinutes()).padStart(2, '0');
+  const dd  = String(now.getDate()).padStart(2, '0');
+  const mo  = String(now.getMonth() + 1).padStart(2, '0');
+  const yy  = now.getFullYear();
+  document.getElementById('clock').innerHTML =
+    hh + ':' + mm + '<br>' + dd + '.' + mo + '.' + yy;
+}
+updateClock();
+setInterval(updateClock, 10000);
+
+// =====================================================================
+//  BAŞLAT
+// =====================================================================
+resizeCanvas();
+drawIdleScreen();
+setStatus('', 'Ses dosyası yükleyin');
+</script>
+</body>
+</html>
