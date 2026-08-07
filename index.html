@@ -31,6 +31,7 @@
 
 html, body {
   height: 100%;
+  min-height: 0;
   font-family: var(--font);
   font-size: 13px;
   overflow: hidden;
@@ -39,7 +40,8 @@ html, body {
 
 /* ─── DESKTOP / OUTER SHELL ─────────────────────── */
 #desktop {
-  width: 100vw; height: 100vh;
+  width: 100vw; height: 100vh; height: 100dvh;
+  min-height: 0;
   display: flex; flex-direction: column;
   position: relative;
   overflow: hidden;
@@ -56,6 +58,7 @@ html, body {
 /* ─── MAIN WINDOW ────────────────────────────────── */
 #mainWindow {
   flex: 1;
+  min-height: 0;
   margin: 10px 10px 0;
   display: flex;
   flex-direction: column;
@@ -157,6 +160,7 @@ html, body {
 /* ─── WINDOW BODY ─────────────────────────────── */
 #windowBody {
   flex: 1;
+  min-height: 0;
   display: flex;
   overflow: hidden;
   background: rgba(5,15,40,0.6);
@@ -316,17 +320,10 @@ html, body {
   border-radius: 4px;
   background: rgba(10,25,70,0.55);
   display: flex; align-items: center; justify-content: center;
-  height: 64px; overflow: hidden; position: relative; cursor: pointer;
+  height: 64px; overflow: hidden; position: relative;
   transition: all .2s;
 }
-.logo-zone:hover { border-color: rgba(120,180,255,0.6); background: rgba(20,50,130,0.5); }
-.logo-zone input[type="file"] { position: absolute; inset: 0; opacity: 0; cursor: pointer; width: 100%; height: 100%; }
-.logo-zone img { max-width: 100%; max-height: 60px; object-fit: contain; display: none; }
-.logo-zone .logo-placeholder {
-  display: flex; flex-direction: column; align-items: center; gap: 3px;
-  color: rgba(130,170,230,0.55); font-size: 10px; pointer-events: none;
-}
-.logo-zone .logo-placeholder span { font-size: 20px; }
+.logo-zone img { max-width: 100%; max-height: 60px; object-fit: contain; display: block; }
 
 /* ── Frekans Analizi ── */
 .freq-display {
@@ -531,7 +528,7 @@ input[type="range"]#ampSlider::-moz-range-thumb {
 
 /* ─── TASKBAR ────────────────────────────────── */
 #taskbar {
-  height: 40px; flex-shrink: 0;
+  height: 40px; min-height: 40px; flex: 0 0 40px; flex-shrink: 0;
   background: linear-gradient(180deg,
     rgba(30,70,170,0.75) 0%,
     rgba(10,30,100,0.90) 45%,
@@ -544,6 +541,58 @@ input[type="range"]#ampSlider::-moz-range-thumb {
   box-shadow: 0 -1px 0 rgba(255,255,255,0.1) inset;
   position: relative;
   z-index: 100;
+}
+
+/* Keep the taskbar inside the viewport on narrow mobile screens. */
+@media (max-width: 700px) {
+  #mainWindow {
+    margin: 6px 6px 0;
+  }
+
+  #desktopIcons {
+    top: 10px;
+    left: 10px;
+  }
+
+  #myComputerWindow {
+    width: calc(100vw - 16px);
+    height: calc(100% - 52px);
+    min-height: 230px;
+  }
+
+  #myComputerWindow.maximized {
+    top: 4px;
+    left: 4px;
+    width: calc(100% - 8px);
+    height: calc(100% - 8px);
+  }
+
+  #aboutWindow {
+    width: calc(100vw - 16px);
+    height: calc(100% - 52px);
+    min-height: 230px;
+  }
+
+  #aboutWindow.maximized {
+    top: 4px;
+    left: 4px;
+    width: calc(100% - 8px);
+    height: calc(100% - 8px);
+  }
+
+  .about-content {
+    padding: 18px;
+  }
+
+  #windowBody {
+    min-height: 0;
+  }
+
+  #taskbar {
+    position: relative;
+    z-index: 1000;
+    visibility: visible;
+  }
 }
 
 /* Kapat / Shut Down butonu */
@@ -604,10 +653,30 @@ input[type="range"]#ampSlider::-moz-range-thumb {
 /* Taskbar logo (küçük, item içinde) */
 .taskbar-item-logo {
   height: 20px; width: 20px; object-fit: contain;
-  border-radius: 2px; display: none;
+  border-radius: 2px; display: block;
 }
 
 .taskbar-spacer { flex: 1; }
+
+#aboutBtn {
+  height: 30px;
+  padding: 0 11px;
+  border: 1px solid rgba(100,150,220,0.55);
+  border-radius: 3px;
+  background: linear-gradient(180deg, rgba(90,145,220,0.6), rgba(25,65,150,0.8));
+  color: rgba(225,240,255,0.95);
+  font-family: var(--font);
+  font-size: 11px;
+  font-weight: 600;
+  text-shadow: 0 1px 2px rgba(0,0,0,0.55);
+  cursor: pointer;
+  box-shadow: 0 1px 0 rgba(255,255,255,0.18) inset;
+  transition: filter .1s;
+  white-space: nowrap;
+}
+
+#aboutBtn:hover { filter: brightness(1.2); }
+#aboutBtn:active { filter: brightness(0.88); }
 
 #clock {
   color: rgba(200,225,255,0.85);
@@ -624,6 +693,7 @@ input[type="range"]#ampSlider::-moz-range-thumb {
   opacity: 0; pointer-events: none;
   transition: opacity 0.28s ease;
   overflow: hidden;
+  z-index: 10;
 }
 #desktopBg.visible { opacity: 1; pointer-events: all; }
 
@@ -632,21 +702,325 @@ input[type="range"]#ampSlider::-moz-range-thumb {
   position: absolute; inset: 0;
   width: 100%; height: 100%;
   object-fit: cover;
-  display: none;
+  display: block;
 }
 
-/* Masaüstü resim yükleme alanı — resim yokken görünür */
-#wallpaperPlaceholder {
-  position: absolute; inset: 0;
-  display: flex; flex-direction: column; align-items: center; justify-content: center;
-  gap: 12px; cursor: pointer;
+/* ─── DESKTOP ICONS ─────────────────────────────── */
+#desktopIcons {
+  position: absolute;
+  top: 16px; left: 18px;
+  display: flex;
+  z-index: 12;
 }
-#wallpaperPlaceholder input[type="file"] {
-  position: absolute; inset: 0; opacity: 0; cursor: pointer; width: 100%; height: 100%;
+
+.desktop-icon {
+  width: 82px;
+  min-height: 82px;
+  padding: 5px 3px;
+  border: 1px solid transparent;
+  border-radius: 3px;
+  background: transparent;
+  color: #fff;
+  font-family: var(--font);
+  font-size: 11px;
+  line-height: 1.2;
+  text-align: center;
+  text-shadow: 1px 1px 2px rgba(0,0,0,0.9);
+  cursor: pointer;
+  user-select: none;
 }
-.wp-icon { font-size: 48px; opacity: 0.18; }
-.wp-label { font-size: 13px; color: rgba(180,210,255,0.35); font-weight: 600; }
-.wp-hint  { font-size: 11px; color: rgba(150,180,220,0.2); }
+
+.desktop-icon:hover,
+.desktop-icon:focus-visible {
+  border-color: rgba(150,210,255,0.7);
+  background: rgba(80,150,230,0.35);
+  outline: none;
+}
+
+.desktop-icon svg {
+  display: block;
+  width: 48px;
+  height: 42px;
+  margin: 0 auto 4px;
+  filter: drop-shadow(1px 2px 2px rgba(0,0,0,0.65));
+}
+
+/* ─── MY COMPUTER WINDOW ────────────────────────── */
+#myComputerWindow {
+  position: absolute;
+  top: 50%; left: 50%;
+  width: min(680px, calc(100vw - 36px));
+  height: min(440px, calc(100% - 70px));
+  min-height: 260px;
+  display: none;
+  flex-direction: column;
+  transform: translate(-50%, -50%);
+  border: 1px solid rgba(120,180,255,0.65);
+  border-radius: 8px 8px 3px 3px;
+  overflow: hidden;
+  background: rgba(190,215,245,0.94);
+  box-shadow: 0 10px 35px rgba(0,20,70,0.8), inset 0 1px 0 rgba(255,255,255,0.4);
+  z-index: 40;
+}
+
+#myComputerWindow.open { display: flex; }
+#myComputerWindow.maximized {
+  top: 6px;
+  left: 6px;
+  width: calc(100% - 12px);
+  height: calc(100% - 12px);
+  transform: none;
+}
+
+/* ─── ABOUT WINDOW ──────────────────────────────── */
+#aboutWindow {
+  position: absolute;
+  top: 50%; left: 50%;
+  width: min(560px, calc(100vw - 36px));
+  height: min(360px, calc(100% - 70px));
+  min-height: 250px;
+  display: none;
+  flex-direction: column;
+  transform: translate(-50%, -50%);
+  border: 1px solid rgba(120,180,255,0.65);
+  border-radius: 8px 8px 3px 3px;
+  overflow: hidden;
+  background: rgba(190,215,245,0.94);
+  box-shadow: 0 10px 35px rgba(0,20,70,0.8), inset 0 1px 0 rgba(255,255,255,0.4);
+  z-index: 50;
+}
+
+#aboutWindow.open { display: flex; }
+#aboutWindow.maximized {
+  top: 6px;
+  left: 6px;
+  width: calc(100% - 12px);
+  height: calc(100% - 12px);
+  transform: none;
+}
+
+.about-content {
+  flex: 1;
+  overflow: auto;
+  padding: 24px;
+  background: linear-gradient(180deg, rgba(239,247,255,0.98), rgba(207,226,246,0.98));
+  color: #18304d;
+}
+
+.about-brand {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin-bottom: 18px;
+}
+
+.about-brand-mark {
+  width: 58px;
+  height: 58px;
+  flex: 0 0 58px;
+  padding: 7px;
+  border-radius: 10px;
+  background: linear-gradient(145deg, #8ed3ff, #1d69bf 62%, #0c337b);
+  border: 1px solid rgba(255,255,255,0.75);
+  box-shadow: 0 2px 7px rgba(0,35,100,0.45), inset 0 1px 0 rgba(255,255,255,0.55);
+}
+
+.about-brand-mark svg {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+.about-heading {
+  color: #174a80;
+  font-size: 22px;
+  font-weight: 700;
+  text-shadow: 0 1px 0 #fff;
+}
+
+.about-subheading {
+  margin-top: 3px;
+  color: #5a7590;
+  font-size: 11px;
+}
+
+.about-copy {
+  margin: 0 0 14px;
+  color: #294c6c;
+  font-size: 13px;
+  line-height: 1.6;
+}
+
+.about-facts {
+  display: grid;
+  grid-template-columns: 110px 1fr;
+  gap: 7px 12px;
+  margin: 16px 0 0;
+  padding: 12px 14px;
+  border: 1px solid #b0c5da;
+  border-radius: 4px;
+  background: rgba(255,255,255,0.55);
+  font-size: 11px;
+}
+
+.about-facts dt {
+  color: #5a7590;
+  font-weight: 700;
+}
+
+.about-facts dd {
+  margin: 0;
+  color: #234d75;
+}
+
+.system-title-bar {
+  height: var(--win7-titleH);
+  min-height: var(--win7-titleH);
+  background: linear-gradient(180deg,
+    rgba(100,160,255,0.72) 0%,
+    rgba(50,110,220,0.82) 40%,
+    rgba(20,70,170,0.9) 60%,
+    rgba(10,50,130,0.94) 100%);
+  border-bottom: 1px solid rgba(80,140,255,0.65);
+  display: flex;
+  align-items: center;
+  padding: 0 6px;
+  user-select: none;
+}
+
+.system-title-icon {
+  width: 17px;
+  height: 17px;
+  margin-right: 5px;
+  flex-shrink: 0;
+  filter: drop-shadow(0 1px 2px rgba(0,0,50,0.7));
+}
+
+.system-window-body {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  background: linear-gradient(180deg, rgba(239,247,255,0.98), rgba(207,226,246,0.98));
+  color: #18304d;
+}
+
+.system-toolbar {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  min-height: 38px;
+  padding: 5px 9px;
+  border-bottom: 1px solid #a8bfd8;
+  background: linear-gradient(180deg, #f8fbff, #d9e8f7);
+  color: #34516f;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.system-toolbar-icon {
+  width: 20px;
+  height: 20px;
+  flex-shrink: 0;
+}
+
+#audioFileList {
+  flex: 1;
+  min-height: 0;
+  overflow: auto;
+  padding: 9px;
+}
+
+.audio-file-empty {
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #60758b;
+  font-size: 12px;
+  text-align: center;
+}
+
+.audio-file-row {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  min-height: 48px;
+  padding: 6px 8px;
+  margin-bottom: 5px;
+  border: 1px solid #b0c5da;
+  border-radius: 3px;
+  background: linear-gradient(180deg, #ffffff, #e7f0f9);
+  box-shadow: 0 1px 2px rgba(40,80,120,0.16);
+}
+
+.audio-file-row:hover {
+  border-color: #6c9ed0;
+  background: linear-gradient(180deg, #fafdff, #d9ebfb);
+}
+
+.audio-file-icon {
+  width: 27px;
+  height: 27px;
+  flex-shrink: 0;
+}
+
+.audio-file-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.audio-file-name {
+  display: block;
+  overflow: hidden;
+  color: #193f66;
+  font-size: 12px;
+  font-weight: 700;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.audio-file-meta {
+  display: block;
+  margin-top: 2px;
+  color: #69819a;
+  font-size: 10px;
+}
+
+.audio-file-action {
+  flex-shrink: 0;
+  padding: 4px 8px;
+  border: 1px solid #7b9fbe;
+  border-radius: 3px;
+  background: linear-gradient(180deg, #ffffff, #c9ddef);
+  color: #234d75;
+  font-family: var(--font);
+  font-size: 10px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.audio-file-action:hover { filter: brightness(1.08); }
+.audio-file-action:active { filter: brightness(0.92); }
+.audio-file-delete { color: #9a2d2d; }
+
+/* ─── WINDOWS LOGO BESIDE KAPAT ─────────────────── */
+#windowsStartLogo {
+  width: 28px;
+  height: 28px;
+  flex: 0 0 28px;
+  padding: 3px;
+  border-radius: 50%;
+  background: radial-gradient(circle at 35% 25%, #7fd6ff, #1b68bf 62%, #0b2e78);
+  border: 1px solid rgba(150,220,255,0.75);
+  box-shadow: 0 1px 3px rgba(0,0,0,0.55), inset 0 1px 0 rgba(255,255,255,0.5);
+}
+
+#windowsStartLogo svg {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
 
 /* ─── WIN7 SCROLLBAR GLOBAL ──────────────────── */
 ::-webkit-scrollbar { width: 8px; }
@@ -662,23 +1036,108 @@ input[type="range"]#ampSlider::-moz-range-thumb {
 
   <!-- ── MASAÜSTÜ ARKA PLANI ── -->
   <div id="desktopBg">
-    <!-- Windows 7 masaüstü resmi buraya gelecek -->
-    <img id="wallpaperImg" alt="Masaüstü" />
-    <!-- Resim yüklenmemişse gösterilen alan -->
-    <div id="wallpaperPlaceholder">
-      <input type="file" id="wallpaperInput" accept="image/*" />
-      <div class="wp-icon">🖼️</div>
-      <div class="wp-label">Masaüstü resmi yükle</div>
-      <div class="wp-hint">Buraya tıkla veya resim sürükle</div>
+    <!-- Replace the value below with the permanent background image source. -->
+    <img id="wallpaperImg" src="PASTE_BACKGROUND_IMAGE_SOURCE_HERE" alt="Masaüstü" />
+    <div id="desktopIcons">
+      <button class="desktop-icon" id="myComputerIcon" type="button" title="My Computer">
+        <svg viewBox="0 0 64 54" aria-hidden="true">
+          <rect x="7" y="4" width="50" height="35" rx="3" fill="#dcefff" stroke="#164b8f" stroke-width="2"/>
+          <rect x="11" y="8" width="42" height="27" fill="#65b9f4" stroke="#2b72b6" stroke-width="1.5"/>
+          <path d="M25 43h14l3 6H22z" fill="#d6e4f2" stroke="#164b8f" stroke-width="1.5"/>
+          <rect x="18" y="49" width="28" height="3" rx="1.5" fill="#164b8f"/>
+          <path d="M33 10l-14 17h11l-4 11 15-19H30z" fill="#fff27a" stroke="#b77818" stroke-width="1"/>
+        </svg>
+        <span>My Computer</span>
+      </button>
     </div>
   </div>
+
+  <!-- ── MY COMPUTER WINDOW ── -->
+  <section id="myComputerWindow" role="dialog" aria-labelledby="myComputerTitle" aria-hidden="true">
+    <div class="system-title-bar">
+      <svg class="system-title-icon" viewBox="0 0 64 54" aria-hidden="true">
+        <rect x="7" y="4" width="50" height="35" rx="3" fill="#dcefff" stroke="#164b8f" stroke-width="2"/>
+        <rect x="11" y="8" width="42" height="27" fill="#65b9f4" stroke="#2b72b6" stroke-width="1.5"/>
+        <path d="M25 43h14l3 6H22z" fill="#d6e4f2" stroke="#164b8f" stroke-width="1.5"/>
+        <rect x="18" y="49" width="28" height="3" rx="1.5" fill="#164b8f"/>
+      </svg>
+      <div class="win-title" id="myComputerTitle">My Computer</div>
+      <div class="win-buttons">
+        <button class="win-btn win-btn-min" id="myComputerMinBtn" type="button" title="Minimize">─</button>
+        <button class="win-btn win-btn-max" id="myComputerMaxBtn" type="button" title="Maximize">□</button>
+        <button class="win-btn win-btn-close" id="myComputerCloseBtn" type="button" title="Close">✕</button>
+      </div>
+    </div>
+    <div class="system-window-body">
+      <div class="system-toolbar">
+        <svg class="system-toolbar-icon" viewBox="0 0 32 28" aria-hidden="true">
+          <path d="M2 7h11l3 3h14v15H2z" fill="#f8cf55" stroke="#ad7c18" stroke-width="1.5"/>
+          <path d="M2 7h11l3 3H2z" fill="#ffe68b" stroke="#ad7c18" stroke-width="1.5"/>
+        </svg>
+        <span id="audioFileSummary">Audio Files</span>
+      </div>
+      <div id="audioFileList"></div>
+    </div>
+  </section>
+
+  <!-- ── ABOUT WINDOW ── -->
+  <section id="aboutWindow" role="dialog" aria-labelledby="aboutTitle" aria-hidden="true">
+    <div class="system-title-bar">
+      <svg class="system-title-icon" viewBox="0 0 24 24" aria-hidden="true">
+        <circle cx="12" cy="12" r="9" fill="#dcefff" stroke="#164b8f" stroke-width="1.5"/>
+        <path d="M12 10.5v6" stroke="#164b8f" stroke-width="2" stroke-linecap="round"/>
+        <circle cx="12" cy="7.2" r="1.2" fill="#164b8f"/>
+      </svg>
+      <div class="win-title" id="aboutTitle">About Sound Waves and Molecules Raisvoice</div>
+      <div class="win-buttons">
+        <button class="win-btn win-btn-min" id="aboutMinBtn" type="button" title="Minimize">─</button>
+        <button class="win-btn win-btn-max" id="aboutMaxBtn" type="button" title="Maximize">□</button>
+        <button class="win-btn win-btn-close" id="aboutCloseBtn" type="button" title="Close">✕</button>
+      </div>
+    </div>
+    <div class="about-content">
+      <div class="about-brand">
+        <div class="about-brand-mark" aria-hidden="true">
+          <svg viewBox="0 0 24 24">
+            <path d="M2 4.2 10.8 3v8.2H2z" fill="#f45151"/>
+            <path d="M12.2 2.8 22 1.5v9.7h-9.8z" fill="#72d96f"/>
+            <path d="M2 12.8h8.8V21L2 19.8z" fill="#57a9ff"/>
+            <path d="M12.2 12.8H22v9.7l-9.8-1.4z" fill="#ffd45b"/>
+          </svg>
+        </div>
+        <div>
+          <div class="about-heading">Sound Waves and Molecules Raisvoice</div>
+          <div class="about-subheading">An interactive sound visualization experience</div>
+        </div>
+      </div>
+      <p class="about-copy">
+        This site turns sound into a living visual simulation. Import an MP3 or WAV file
+        to observe how audio frequency and amplitude can be represented as movement
+        through air molecules. (New updates keep coming!)
+      </p>
+      <p class="about-copy">
+        The visualizer uses your browser's audio tools to analyze the sound locally.
+        Imported audio files can also be reopened from My Computer on this device. You can access the audio files that you upload unless you delete browsing datas. Windows 7 Aero 版本 XP200 型号
+      </p>
+      <dl class="about-facts">
+        <dt>Purpose</dt>
+        <dd>Explore the relationship between sound, frequency, amplitude, and motion.</dd>
+        <dt>Audio</dt>
+        <dd>MP3 and WAV files are supported.</dd>
+        <dt>Privacy</dt>
+        <dd>Audio analysis happens in your browser; saved files stay in this browser's local storage.</dd>
+        <dt>Production</dt>
+        <dd>Produced in Germany, Munich. Model: Windows Aero 7. in 2009 CC.</dd>
+      </dl>
+    </div>
+  </section>
 
   <!-- ── MAIN WINDOW ── -->
   <div id="mainWindow">
     <!-- Title Bar -->
     <div id="titleBar">
       <div class="win-icon">🔊</div>
-      <div class="win-title">Ses Dalgası Simülasyonu — Hava Molekülü Görselleştirici</div>
+      <div class="win-title">Sound Wave Simulation — Air Molecules Visualizer</div>
       <div class="win-buttons">
         <button class="win-btn win-btn-min" id="minBtn" title="Küçült">─</button>
         <button class="win-btn win-btn-max" title="Büyüt">□</button>
@@ -695,12 +1154,8 @@ input[type="range"]#ampSlider::-moz-range-thumb {
         <div class="section">
           <div class="section-title">Site Logosu</div>
           <div class="logo-zone" id="logoZone">
-            <input type="file" id="logoInput" accept="image/*" />
-            <img id="logoImg" alt="Logo" />
-            <div class="logo-placeholder" id="logoPlaceholder">
-              <span>🖼️</span>
-              Logonuzu buraya yükleyin
-            </div>
+            <!-- Replace the value below with the permanent logo image source. -->
+            <img id="logoImg" src="PASTE_LOGO_IMAGE_SOURCE_HERE" alt="Logo" />
           </div>
         </div>
 
@@ -785,8 +1240,8 @@ input[type="range"]#ampSlider::-moz-range-thumb {
                 <line x1="18" y1="17" x2="32" y2="17" stroke="#58a6ff" stroke-width="1.2"/>
               </svg>
               <div>
-                <div class="legend-name n2c">N₂ — Azot (%78)</div>
-                <div class="legend-desc">2 atom, üçlü bağ. Mavi.</div>
+                <div class="legend-name n2c">N₂ — Nitrogen(%78)</div>
+                <div class="legend-desc">2 atoms, triple bond. Blue.</div>
               </div>
             </div>
             <div class="legend-item">
@@ -799,8 +1254,8 @@ input[type="range"]#ampSlider::-moz-range-thumb {
                 <line x1="18" y1="16" x2="32" y2="16" stroke="#f85149" stroke-width="1.2"/>
               </svg>
               <div>
-                <div class="legend-name o2c">O₂ — Oksijen (%22)</div>
-                <div class="legend-desc">2 atom, çift bağ. Kırmızı.</div>
+                <div class="legend-name o2c">O₂ — Oxygen (%22)</div>
+                <div class="legend-desc">2 atoms, double bond. Red.</div>
               </div>
             </div>
           </div>
@@ -814,7 +1269,7 @@ input[type="range"]#ampSlider::-moz-range-thumb {
               <input type="range" id="ampSlider" min="0" max="100" value="60" />
               <span class="amp-val" id="ampVal">60%</span>
             </div>
-            <div class="amp-desc">Moleküllerin ileri-geri gitme uzaklığını ayarlar</div>
+            <div class="amp-desc">It adjusts distances of molecules' movements  back and forth</div>
           </div>
         </div>
 
@@ -822,9 +1277,9 @@ input[type="range"]#ampSlider::-moz-range-thumb {
           <div class="section-title">Ses Etkisi Haritası</div>
           <ul class="physics-list">
             <li><span class="dot" style="background:#f85149"></span>
-              <span><strong style="color:#ff7872">Bas:</strong> Büyük genlik — moleküller geniş aralıkta salınır</span></li>
+              <span><strong style="color:#ff7872">Bas:</strong> High amplitude — molecules oscillate in a long-range way</span></li>
             <li><span class="dot" style="background:#58a6ff"></span>
-              <span><strong style="color:#72b4ff">Tiz:</strong> Yüksek frekans — moleküller çok daha hızlı ileri-geri hareket eder</span></li>
+              <span><strong style="color:#72b4ff">Tiz:</strong> High frequency — molecules move back and forth much faster</span></li>
           </ul>
         </div>
 
@@ -860,19 +1315,32 @@ input[type="range"]#ampSlider::-moz-range-thumb {
   <!-- ── TASKBAR ── -->
   <div id="taskbar">
     <!-- Kapat / Shut Down butonu -->
+    <div id="windowsStartLogo" title="Windows" aria-label="Windows">
+      <svg viewBox="0 0 24 24" aria-hidden="true">
+        <path d="M2 4.2 10.8 3v8.2H2z" fill="#f45151"/>
+        <path d="M12.2 2.8 22 1.5v9.7h-9.8z" fill="#72d96f"/>
+        <path d="M2 12.8h8.8V21L2 19.8z" fill="#57a9ff"/>
+        <path d="M12.2 12.8H22v9.7l-9.8-1.4z" fill="#ffd45b"/>
+      </svg>
+    </div>
     <button id="startBtn" title="Siteyi kapat">⏻ Kapat</button>
     <div class="taskbar-sep"></div>
     <!-- Uygulama butonu: logo + başlık, tıklayınca pencere açılır/kapanır -->
     <div class="taskbar-item win-active" id="taskbarItem">
-      <img class="taskbar-item-logo" id="taskbarLogo" alt="Logo" />
-      <span id="taskbarIcon">🔊</span>
+      <img class="taskbar-item-logo" id="taskbarLogo" src="PASTE_LOGO_IMAGE_SOURCE_HERE" alt="Logo" />
       Ses Dalgası Simülasyonu
     </div>
     <div class="taskbar-spacer"></div>
+    <button id="aboutBtn" type="button" title="About this site">About</button>
     <div id="clock">00:00<br>00.00.2007</div>
   </div>
 
 </div><!-- /desktop -->
+
+<!-- Opening sound: replace the source below with your own audio file or URL. -->
+<audio id="openingSound" preload="auto" playsinline>
+  <source src="PASTE_OPENING_" type="audio/mpeg">
+</audio>
 
 <script>
 // =====================================================================
@@ -894,6 +1362,47 @@ const btnText     = document.getElementById('btnText');
 const statusDot   = document.getElementById('statusDot');
 const statusText  = document.getElementById('statusText');
 const idleOverlay = document.getElementById('idleOverlay');
+const openingSound = document.getElementById('openingSound');
+
+// =====================================================================
+//  OPENING SOUND
+// =====================================================================
+// Browsers may block sound until the visitor interacts with the page.
+// In that case, retry once on the visitor's first click, tap, or key press.
+let openingSoundStarted = false;
+
+function playOpeningSound() {
+  const openingSource = openingSound.querySelector('source');
+  const sourceValue = openingSource ? openingSource.getAttribute('src') : '';
+  if (openingSoundStarted || !sourceValue ||
+      sourceValue.includes('PASTE_OPENING_SOUND_SOURCE_HERE')) return;
+
+  const playback = openingSound.play();
+  if (playback && typeof playback.then === 'function') {
+    playback
+      .then(() => {
+        openingSoundStarted = true;
+        removeOpeningSoundRetry();
+      })
+      .catch(() => {
+        // Autoplay was blocked; the first user interaction will retry it.
+      });
+  } else {
+    openingSoundStarted = true;
+  }
+}
+
+function removeOpeningSoundRetry() {
+  ['pointerdown', 'keydown', 'touchstart'].forEach(eventName => {
+    document.removeEventListener(eventName, playOpeningSound);
+  });
+}
+
+['pointerdown', 'keydown', 'touchstart'].forEach(eventName => {
+  document.addEventListener(eventName, playOpeningSound, { once: false, passive: true });
+});
+
+window.addEventListener('load', playOpeningSound, { once: true });
 
 // Frekans UI
 const hzBig      = document.getElementById('hzBig');
@@ -1290,6 +1799,163 @@ const mainWindow  = document.getElementById('mainWindow');
 const desktopBg   = document.getElementById('desktopBg');
 const minBtn      = document.getElementById('minBtn');
 const taskbarItem = document.getElementById('taskbarItem');
+const myComputerIcon = document.getElementById('myComputerIcon');
+const myComputerWindow = document.getElementById('myComputerWindow');
+const myComputerCloseBtn = document.getElementById('myComputerCloseBtn');
+const myComputerMinBtn = document.getElementById('myComputerMinBtn');
+const myComputerMaxBtn = document.getElementById('myComputerMaxBtn');
+const audioFileList = document.getElementById('audioFileList');
+const audioFileSummary = document.getElementById('audioFileSummary');
+const aboutBtn = document.getElementById('aboutBtn');
+const aboutWindow = document.getElementById('aboutWindow');
+const aboutCloseBtn = document.getElementById('aboutCloseBtn');
+const aboutMinBtn = document.getElementById('aboutMinBtn');
+const aboutMaxBtn = document.getElementById('aboutMaxBtn');
+
+// =====================================================================
+//  MY COMPUTER — LOCAL AUDIO LIBRARY
+// =====================================================================
+const AUDIO_STORAGE_KEY = 'raisvoice.audioFiles';
+
+function getStoredAudioFiles() {
+  try {
+    const raw = localStorage.getItem(AUDIO_STORAGE_KEY);
+    const files = raw ? JSON.parse(raw) : [];
+    return Array.isArray(files) ? files : [];
+  } catch (_) {
+    return [];
+  }
+}
+
+function setStoredAudioFiles(files) {
+  try {
+    localStorage.setItem(AUDIO_STORAGE_KEY, JSON.stringify(files));
+    return true;
+  } catch (_) {
+    return false;
+  }
+}
+
+function fileToDataUrl(file) {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = () => resolve(String(reader.result));
+    reader.onerror = () => reject(reader.error || new Error('Dosya okunamadı'));
+    reader.readAsDataURL(file);
+  });
+}
+
+function saveAudioFile(file, dataUrl) {
+  const files = getStoredAudioFiles();
+  const id = [file.name, file.size, file.lastModified || 0].join(':');
+  const record = {
+    id,
+    name: file.name,
+    type: file.type || 'audio/*',
+    size: file.size,
+    lastModified: file.lastModified || 0,
+    addedAt: new Date().toISOString(),
+    dataUrl
+  };
+  const withoutDuplicate = files.filter(savedFile => savedFile.id !== id);
+  return setStoredAudioFiles([record, ...withoutDuplicate].slice(0, 25));
+}
+
+function formatFileSize(bytes) {
+  if (!Number.isFinite(bytes) || bytes <= 0) return 'Audio file';
+  if (bytes < 1024 * 1024) return Math.max(1, Math.round(bytes / 1024)) + ' KB';
+  return (bytes / (1024 * 1024)).toFixed(1) + ' MB';
+}
+
+function renderAudioFileList() {
+  const files = getStoredAudioFiles();
+  audioFileList.replaceChildren();
+  audioFileSummary.textContent = files.length
+    ? `Audio Files (${files.length})`
+    : 'Audio Files';
+
+  if (!files.length) {
+    const empty = document.createElement('div');
+    empty.className = 'audio-file-empty';
+    empty.textContent = 'No imported audio files yet.';
+    audioFileList.appendChild(empty);
+    return;
+  }
+
+  files.forEach(savedFile => {
+    const row = document.createElement('div');
+    row.className = 'audio-file-row';
+
+    const icon = document.createElement('div');
+    icon.className = 'audio-file-icon';
+    icon.textContent = '🎵';
+    icon.setAttribute('aria-hidden', 'true');
+
+    const info = document.createElement('div');
+    info.className = 'audio-file-info';
+    const name = document.createElement('span');
+    name.className = 'audio-file-name';
+    name.textContent = savedFile.name;
+    name.title = savedFile.name;
+    const meta = document.createElement('span');
+    meta.className = 'audio-file-meta';
+    meta.textContent = `${formatFileSize(savedFile.size)} · Stored on this device`;
+    info.append(name, meta);
+
+    const openButton = document.createElement('button');
+    openButton.className = 'audio-file-action';
+    openButton.type = 'button';
+    openButton.textContent = 'Open';
+    openButton.addEventListener('click', () => loadStoredAudio(savedFile));
+
+    const deleteButton = document.createElement('button');
+    deleteButton.className = 'audio-file-action audio-file-delete';
+    deleteButton.type = 'button';
+    deleteButton.textContent = 'Delete';
+    deleteButton.addEventListener('click', () => {
+      const remaining = getStoredAudioFiles().filter(file => file.id !== savedFile.id);
+      if (setStoredAudioFiles(remaining)) renderAudioFileList();
+    });
+
+    row.append(icon, info, openButton, deleteButton);
+    audioFileList.appendChild(row);
+  });
+}
+
+function openMyComputer() {
+  renderAudioFileList();
+  myComputerWindow.classList.add('open');
+  myComputerWindow.setAttribute('aria-hidden', 'false');
+}
+
+function closeMyComputer() {
+  myComputerWindow.classList.remove('open', 'maximized');
+  myComputerWindow.setAttribute('aria-hidden', 'true');
+}
+
+myComputerIcon.addEventListener('click', openMyComputer);
+myComputerCloseBtn.addEventListener('click', closeMyComputer);
+myComputerMinBtn.addEventListener('click', closeMyComputer);
+myComputerMaxBtn.addEventListener('click', () => {
+  myComputerWindow.classList.toggle('maximized');
+});
+
+function openAbout() {
+  aboutWindow.classList.add('open');
+  aboutWindow.setAttribute('aria-hidden', 'false');
+}
+
+function closeAbout() {
+  aboutWindow.classList.remove('open', 'maximized');
+  aboutWindow.setAttribute('aria-hidden', 'true');
+}
+
+aboutBtn.addEventListener('click', openAbout);
+aboutCloseBtn.addEventListener('click', closeAbout);
+aboutMinBtn.addEventListener('click', closeAbout);
+aboutMaxBtn.addEventListener('click', () => {
+  aboutWindow.classList.toggle('maximized');
+});
 
 function minimizeWindow() {
   mainWindow.classList.add('minimized');
@@ -1339,50 +2005,6 @@ ampSlider.addEventListener('input', () => {
 });
 
 // =====================================================================
-//  LOGO YÜKLEME
-// =====================================================================
-const logoInput       = document.getElementById('logoInput');
-const logoImg         = document.getElementById('logoImg');
-const logoPlaceholder = document.getElementById('logoPlaceholder');
-const taskbarLogo     = document.getElementById('taskbarLogo');
-const taskbarIcon     = document.getElementById('taskbarIcon');
-
-logoInput.addEventListener('change', e => {
-  const file = e.target.files[0];
-  if (!file || !file.type.startsWith('image/')) return;
-  const reader = new FileReader();
-  reader.onload = ev => {
-    const src = ev.target.result;
-    // Panel içi logo
-    logoImg.src = src;
-    logoImg.style.display = 'block';
-    logoPlaceholder.style.display = 'none';
-    // Taskbar logosu (buton içine)
-    taskbarLogo.src = src;
-    taskbarLogo.style.display = 'block';
-    // Emoji ikonu gizle
-    taskbarIcon.style.display = 'none';
-  };
-  reader.readAsDataURL(file);
-});
-
-// =====================================================================
-//  MASAÜSTÜ ARKA PLAN RESMİ YÜKLEME
-// =====================================================================
-document.getElementById('wallpaperInput').addEventListener('change', e => {
-  const file = e.target.files[0];
-  if (!file || !file.type.startsWith('image/')) return;
-  const reader = new FileReader();
-  reader.onload = ev => {
-    const wallpaperImg = document.getElementById('wallpaperImg');
-    wallpaperImg.src = ev.target.result;
-    wallpaperImg.style.display = 'block';
-    document.getElementById('wallpaperPlaceholder').style.display = 'none';
-  };
-  reader.readAsDataURL(file);
-});
-
-// =====================================================================
 //  DOSYA YÜKLEME
 // =====================================================================
 fileInput.addEventListener('change', async e => { const f = e.target.files[0]; if (f) await loadFile(f); });
@@ -1406,11 +2028,37 @@ async function loadFile(file) {
     const ac  = getAudioCtx();
     const buf = await file.arrayBuffer();
     audioBuffer = await ac.decodeAudioData(buf);
+    try {
+      const dataUrl = await fileToDataUrl(file);
+      if (!saveAudioFile(file, dataUrl)) {
+        setStatus('', 'Hazır: ' + file.name + ' (Yerel kayıt alanı dolu)');
+      }
+    } catch (_) {
+      // The current import remains usable even if browser storage is unavailable.
+    }
     runBtn.disabled = false;
-    setStatus('', 'Hazır: ' + file.name);
+    if (!statusText.textContent.includes('Yerel kayıt alanı dolu')) {
+      setStatus('', 'Hazır: ' + file.name);
+    }
   } catch (err) {
     setStatus('error', 'Okunamadı: ' + err.message);
     runBtn.disabled = true;
+  }
+}
+
+async function loadStoredAudio(savedFile) {
+  if (!savedFile || !savedFile.dataUrl) return;
+  try {
+    const response = await fetch(savedFile.dataUrl);
+    const blob = await response.blob();
+    const file = new File([blob], savedFile.name, {
+      type: savedFile.type || blob.type || 'audio/*',
+      lastModified: savedFile.lastModified || 0
+    });
+    await loadFile(file);
+    closeMyComputer();
+  } catch (err) {
+    setStatus('error', 'Kayıtlı ses açılamadı: ' + err.message);
   }
 }
 
@@ -1490,4 +2138,6 @@ drawIdleScreen();
 setStatus('', 'Ses dosyası yükleyin');
 </script>
 </body>
+</html>
+/body>
 </html>
