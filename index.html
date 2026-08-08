@@ -552,7 +552,16 @@ input[type="range"]#ampSlider::-moz-range-thumb {
   #desktopIcons {
     top: 10px;
     left: 10px;
+    right: 10px;
+    grid-template-columns: repeat(2, 82px);
   }
+
+  #myComputerIcon { grid-column: 1; grid-row: 1; }
+  #recycleBinIcon { grid-column: 2; grid-row: 1; }
+  #chessDesktopIcon { grid-column: 1; grid-row: 2; }
+  #cmdDesktopIcon { grid-column: 2; grid-row: 2; }
+  #notepadIcon { grid-column: 1; grid-row: 3; }
+  #chromeIcon { grid-column: 2; grid-row: 3; }
 
   #myComputerWindow {
     width: calc(100vw - 16px);
@@ -561,6 +570,19 @@ input[type="range"]#ampSlider::-moz-range-thumb {
   }
 
   #myComputerWindow.maximized {
+    top: 4px;
+    left: 4px;
+    width: calc(100% - 8px);
+    height: calc(100% - 8px);
+  }
+
+  #recycleBinWindow {
+    width: calc(100vw - 16px);
+    height: calc(100% - 52px);
+    min-height: 230px;
+  }
+
+  #recycleBinWindow.maximized {
     top: 4px;
     left: 4px;
     width: calc(100% - 8px);
@@ -721,9 +743,13 @@ input[type="range"]#ampSlider::-moz-range-thumb {
 /* ─── DESKTOP ICONS ─────────────────────────────── */
 #desktopIcons {
   position: absolute;
-  top: 16px; left: 18px;
-  display: flex;
-  flex-wrap: wrap;
+  top: 16px;
+  left: 18px;
+  right: 18px;
+  display: grid;
+  grid-template-columns: repeat(4, 82px);
+  grid-auto-rows: 106px;
+  grid-auto-flow: row;
   align-content: flex-start;
   gap: 2px;
   z-index: 12;
@@ -759,6 +785,101 @@ input[type="range"]#ampSlider::-moz-range-thumb {
   height: 42px;
   margin: 0 auto 4px;
   filter: drop-shadow(1px 2px 2px rgba(0,0,0,0.65));
+}
+
+#myComputerIcon { grid-column: 1; grid-row: 1; }
+#recycleBinIcon { grid-column: 2; grid-row: 1; }
+#notepadIcon { grid-column: 3; grid-row: 1; }
+#chromeIcon { grid-column: 4; grid-row: 1; }
+#chessDesktopIcon { grid-column: 1; grid-row: 2; }
+#cmdDesktopIcon { grid-column: 2; grid-row: 2; }
+
+/* ─── WINDOWS COMMAND PROMPT WINDOW ───────────────── */
+#cmdWindow {
+  position: absolute;
+  top: 50%; left: 50%;
+  width: min(780px, calc(100vw - 28px));
+  height: min(520px, calc(100% - 48px));
+  min-height: 330px;
+  display: none;
+  flex-direction: column;
+  transform: translate(-50%, -50%);
+  border: 1px solid rgba(120,180,255,0.7);
+  border-radius: 8px 8px 3px 3px;
+  overflow: hidden;
+  background: #000;
+  box-shadow: 0 12px 38px rgba(0,20,70,0.82), inset 0 1px 0 rgba(255,255,255,0.4);
+  z-index: 90;
+}
+
+#cmdWindow.open { display: flex; }
+#cmdWindow.maximized {
+  top: 6px;
+  left: 6px;
+  width: calc(100% - 12px);
+  height: calc(100% - 12px);
+  transform: none;
+}
+
+.cmd-title-icon {
+  width: 17px;
+  height: 17px;
+  margin-right: 5px;
+  flex-shrink: 0;
+}
+
+.cmd-console {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  background: #000;
+  color: #f2f2f2;
+  font-family: Consolas, "Lucida Console", "Courier New", monospace;
+  font-size: 13px;
+  line-height: 1.35;
+}
+
+.cmd-output {
+  flex: 1;
+  min-height: 0;
+  overflow: auto;
+  padding: 12px 12px 4px;
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+
+.cmd-output::-webkit-scrollbar { width: 10px; }
+.cmd-output::-webkit-scrollbar-track { background: #080808; }
+.cmd-output::-webkit-scrollbar-thumb { background: #454545; border-radius: 0; }
+
+.cmd-input-row {
+  display: flex;
+  align-items: center;
+  flex-shrink: 0;
+  padding: 5px 12px 12px;
+}
+
+.cmd-prompt {
+  flex: 0 0 auto;
+  white-space: pre;
+}
+
+#cmdInput {
+  flex: 1;
+  min-width: 0;
+  padding: 0;
+  border: 0;
+  outline: 0;
+  background: transparent;
+  color: inherit;
+  font: inherit;
+  caret-color: currentColor;
+}
+
+@media (max-width: 650px) {
+  #cmdWindow { width: calc(100vw - 14px); height: calc(100% - 34px); }
+  .cmd-console { font-size: 12px; }
 }
 
 /* ─── NOTEPAD WINDOW ────────────────────────────── */
@@ -871,6 +992,45 @@ input[type="range"]#ampSlider::-moz-range-thumb {
   width: 48px;
   height: 42px;
 }
+
+.saved-note-entry {
+  position: relative;
+  width: 82px;
+  min-height: 106px;
+}
+
+.saved-note-entry .saved-note-icon {
+  position: relative;
+  top: auto;
+  left: auto;
+}
+
+.note-delete-action {
+  position: absolute;
+  left: 7px;
+  bottom: 0;
+  z-index: 3;
+  display: none;
+  width: 68px;
+  height: 20px;
+  padding: 0;
+  border: 1px solid #a24545;
+  border-radius: 3px;
+  background: linear-gradient(180deg, #fff7f7, #e7b9b9);
+  color: #7c1e1e;
+  font-family: var(--font);
+  font-size: 10px;
+  font-weight: 700;
+  cursor: pointer;
+  box-shadow: 0 1px 2px rgba(0,0,0,0.35);
+}
+
+.saved-note-entry.delete-visible .note-delete-action {
+  display: block;
+}
+
+.note-delete-action:hover { filter: brightness(1.08); }
+.note-delete-action:active { filter: brightness(0.92); }
 
 /* ─── GOOGLE CHROME WINDOW ──────────────────────── */
 #chromeWindow {
@@ -1256,6 +1416,32 @@ input[type="range"]#ampSlider::-moz-range-thumb {
   transform: none;
 }
 
+#recycleBinWindow {
+  position: absolute;
+  top: 50%; left: 50%;
+  width: min(680px, calc(100vw - 36px));
+  height: min(440px, calc(100% - 70px));
+  min-height: 260px;
+  display: none;
+  flex-direction: column;
+  transform: translate(-50%, -50%);
+  border: 1px solid rgba(120,180,255,0.65);
+  border-radius: 8px 8px 3px 3px;
+  overflow: hidden;
+  background: rgba(190,215,245,0.94);
+  box-shadow: 0 10px 35px rgba(0,20,70,0.8), inset 0 1px 0 rgba(255,255,255,0.4);
+  z-index: 45;
+}
+
+#recycleBinWindow.open { display: flex; }
+#recycleBinWindow.maximized {
+  top: 6px;
+  left: 6px;
+  width: calc(100% - 12px);
+  height: calc(100% - 12px);
+  transform: none;
+}
+
 .my-computer-content {
   flex: 1;
   min-height: 0;
@@ -1352,6 +1538,128 @@ input[type="range"]#ampSlider::-moz-range-thumb {
   min-height: 0;
   display: flex;
   flex-direction: column;
+}
+
+.recycle-bin-content {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.recycle-bin-toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  min-height: 38px;
+  padding: 5px 9px;
+  border-bottom: 1px solid #a8bfd8;
+  background: linear-gradient(180deg, #f8fbff, #d9e8f7);
+  color: #34516f;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.recycle-bin-toolbar-copy {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  min-width: 0;
+}
+
+.recycle-bin-toolbar-icon {
+  width: 20px;
+  height: 20px;
+  flex: 0 0 20px;
+}
+
+#clearRecycleBinBtn {
+  flex-shrink: 0;
+  padding: 4px 8px;
+  border: 1px solid #a24545;
+  border-radius: 3px;
+  background: linear-gradient(180deg, #fff7f7, #e7b9b9);
+  color: #7c1e1e;
+  font-family: var(--font);
+  font-size: 10px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+#clearRecycleBinBtn:hover { filter: brightness(1.08); }
+#clearRecycleBinBtn:active { filter: brightness(0.92); }
+#clearRecycleBinBtn:disabled {
+  cursor: default;
+  opacity: 0.55;
+  filter: none;
+}
+
+#recycleBinFileList {
+  flex: 1;
+  min-height: 0;
+  overflow: auto;
+  padding: 9px;
+}
+
+.recycle-bin-empty {
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #60758b;
+  font-size: 12px;
+  text-align: center;
+}
+
+.recycle-bin-row {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  min-height: 48px;
+  padding: 6px 8px;
+  margin-bottom: 5px;
+  border: 1px solid #b0c5da;
+  border-radius: 3px;
+  background: linear-gradient(180deg, #ffffff, #e7f0f9);
+  box-shadow: 0 1px 2px rgba(40,80,120,0.16);
+}
+
+.recycle-bin-row:hover {
+  border-color: #6c9ed0;
+  background: linear-gradient(180deg, #fafdff, #d9ebfb);
+}
+
+.recycle-bin-file-icon {
+  width: 27px;
+  height: 27px;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 21px;
+}
+
+.recycle-bin-file-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.recycle-bin-file-name {
+  display: block;
+  overflow: hidden;
+  color: #193f66;
+  font-size: 12px;
+  font-weight: 700;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.recycle-bin-file-meta {
+  display: block;
+  margin-top: 2px;
+  color: #69819a;
+  font-size: 10px;
 }
 
 #audioFileList {
@@ -1596,6 +1904,216 @@ input[type="range"]#ampSlider::-moz-range-thumb {
 .audio-file-action:active { filter: brightness(0.92); }
 .audio-file-delete { color: #9a2d2d; }
 
+/* ─── CHESS WINDOW ───────────────────────────────── */
+#chessWindow {
+  position: absolute;
+  top: 50%; left: 50%;
+  width: min(760px, calc(100vw - 28px));
+  height: min(650px, calc(100% - 48px));
+  min-height: 430px;
+  display: none;
+  flex-direction: column;
+  transform: translate(-50%, -50%);
+  border: 1px solid rgba(120,180,255,0.7);
+  border-radius: 8px 8px 3px 3px;
+  overflow: hidden;
+  background: #d8e7f4;
+  box-shadow: 0 12px 38px rgba(0,20,70,0.82), inset 0 1px 0 rgba(255,255,255,0.4);
+  z-index: 80;
+}
+
+#chessWindow.open { display: flex; }
+#chessWindow.maximized {
+  top: 6px;
+  left: 6px;
+  width: calc(100% - 12px);
+  height: calc(100% - 12px);
+  transform: none;
+}
+
+.chess-content {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  background:
+    radial-gradient(circle at 15% 0%, rgba(255,255,255,0.85), transparent 38%),
+    linear-gradient(145deg, #edf6ff 0%, #c6d9ec 100%);
+  color: #173452;
+}
+
+.chess-toolbar {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 38px;
+  padding: 5px 10px;
+  border-bottom: 1px solid #a8bfd8;
+  background: linear-gradient(180deg, #fafdff, #d8e8f7);
+}
+
+.chess-toolbar-title {
+  flex: 1;
+  color: #214b73;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.chess-action-button {
+  height: 27px;
+  padding: 0 11px;
+  border: 1px solid #789bbb;
+  border-radius: 3px;
+  background: linear-gradient(180deg, #fff, #c6dced);
+  color: #234d75;
+  font-family: var(--font);
+  font-size: 11px;
+  font-weight: 700;
+  cursor: pointer;
+  box-shadow: inset 0 1px 0 rgba(255,255,255,0.75);
+}
+
+.chess-action-button:hover { filter: brightness(1.07); }
+.chess-action-button:active { filter: brightness(0.93); }
+
+.chess-game-area {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 20px;
+  padding: 18px;
+  overflow: auto;
+}
+
+.chess-board-shell {
+  flex: 0 1 auto;
+  width: min(500px, 72vh, calc(100vw - 80px));
+  min-width: 300px;
+  padding: 10px;
+  border: 1px solid #6d8eac;
+  border-radius: 5px;
+  background: linear-gradient(145deg, #eef7ff, #afc8df);
+  box-shadow: 0 4px 10px rgba(30,70,110,0.28), inset 0 1px 0 #fff;
+}
+
+.chess-board {
+  display: grid;
+  grid-template-columns: repeat(8, 1fr);
+  aspect-ratio: 1;
+  overflow: hidden;
+  border: 2px solid #294867;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.35);
+  user-select: none;
+}
+
+.chess-square {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  aspect-ratio: 1;
+  border: 0;
+  padding: 0;
+  font-family: "Segoe UI Symbol", "Noto Sans Symbols 2", serif;
+  font-size: clamp(25px, 6.2vw, 54px);
+  line-height: 1;
+  cursor: pointer;
+}
+
+.chess-square.light { background: #f0d9b5; }
+.chess-square.dark { background: #b58863; }
+.chess-square:hover { filter: brightness(1.09); }
+.chess-square.selected { box-shadow: inset 0 0 0 4px rgba(255,220,73,0.95); }
+.chess-square.last-move { background: #cdd66b; }
+.chess-square.dark.last-move { background: #a8b64f; }
+.chess-square.in-check { box-shadow: inset 0 0 0 4px rgba(217,55,38,0.92); }
+
+.chess-square.legal-move::after {
+  content: '';
+  position: absolute;
+  width: 24%;
+  height: 24%;
+  border-radius: 50%;
+  background: rgba(30,63,83,0.45);
+  pointer-events: none;
+}
+
+.chess-square.legal-move.capture::after {
+  width: 78%;
+  height: 78%;
+  border: 4px solid rgba(182,46,32,0.7);
+  background: transparent;
+}
+
+.chess-piece {
+  position: relative;
+  z-index: 1;
+  transform: translateY(-1px);
+  text-shadow: 0 2px 1px rgba(0,0,0,0.35);
+  pointer-events: none;
+}
+
+.chess-piece.white { color: #fffdf2; -webkit-text-stroke: 1px #493722; }
+.chess-piece.black { color: #27221d; -webkit-text-stroke: 1px #e6cfae; }
+
+.chess-side-panel {
+  width: 190px;
+  flex: 0 0 190px;
+  align-self: stretch;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 12px;
+  border: 1px solid #a8bfd8;
+  border-radius: 4px;
+  background: rgba(247,251,255,0.72);
+  box-shadow: inset 0 1px 0 rgba(255,255,255,0.8);
+}
+
+.chess-status {
+  min-height: 45px;
+  padding: 9px;
+  border: 1px solid #9fb8cf;
+  border-radius: 3px;
+  background: #fff;
+  color: #234d75;
+  font-size: 12px;
+  font-weight: 700;
+  line-height: 1.35;
+}
+
+.chess-status.thinking { color: #93630e; }
+.chess-status.winner { color: #1d6c38; }
+.chess-status.loser { color: #a02d2d; }
+
+.chess-tip {
+  margin-top: auto;
+  color: #5e7690;
+  font-size: 10px;
+  line-height: 1.5;
+}
+
+.chess-legend {
+  color: #536f89;
+  font-size: 10px;
+  line-height: 1.5;
+}
+
+@media (max-width: 650px) {
+  #chessWindow { width: calc(100vw - 14px); height: calc(100% - 34px); }
+  .chess-game-area { flex-direction: column; gap: 10px; padding: 10px; }
+  .chess-board-shell { width: min(92vw, 500px); min-width: 0; }
+  .chess-side-panel {
+    width: min(92vw, 500px);
+    flex: 0 0 auto;
+    align-self: auto;
+    min-height: 92px;
+  }
+  .chess-tip { margin-top: 0; }
+}
+
 /* ─── WINDOWS LOGO BESIDE KAPAT ─────────────────── */
 #windowsStartLogo {
   width: 28px;
@@ -1606,12 +2124,210 @@ input[type="range"]#ampSlider::-moz-range-thumb {
   background: radial-gradient(circle at 35% 25%, #7fd6ff, #1b68bf 62%, #0b2e78);
   border: 1px solid rgba(150,220,255,0.75);
   box-shadow: 0 1px 3px rgba(0,0,0,0.55), inset 0 1px 0 rgba(255,255,255,0.5);
+  cursor: pointer;
+  transition: filter .1s, transform .1s;
+}
+
+#windowsStartLogo:hover {
+  filter: brightness(1.18);
+}
+
+#windowsStartLogo:active,
+#windowsStartLogo[aria-expanded="true"] {
+  filter: brightness(0.9);
+  transform: translateY(1px);
+}
+
+#windowsStartLogo:focus-visible {
+  outline: 2px solid rgba(220,245,255,0.95);
+  outline-offset: 2px;
 }
 
 #windowsStartLogo svg {
   display: block;
   width: 100%;
   height: 100%;
+}
+
+/* ─── WINDOWS APP LAUNCHER ─────────────────────── */
+#startMenu {
+  position: absolute;
+  left: 4px;
+  bottom: 39px;
+  z-index: 120;
+  width: min(330px, calc(100vw - 12px));
+  display: none;
+  flex-direction: column;
+  overflow: hidden;
+  border: 1px solid rgba(118,174,235,0.78);
+  border-radius: 7px 7px 3px 3px;
+  background: linear-gradient(180deg, rgba(225,240,255,0.98), rgba(169,202,239,0.98));
+  box-shadow: 0 8px 26px rgba(0,12,55,0.72), inset 0 1px 0 rgba(255,255,255,0.78);
+}
+
+#startMenu.open {
+  display: flex;
+  animation: startMenuIn .14s ease-out;
+}
+
+@keyframes startMenuIn {
+  from { opacity: 0; transform: translateY(6px) scale(.98); }
+  to { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+.start-menu-header {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  min-height: 53px;
+  padding: 8px 10px;
+  color: #173d67;
+  background: linear-gradient(180deg, rgba(255,255,255,0.5), rgba(188,216,247,0.38));
+  border-bottom: 1px solid rgba(115,156,200,0.6);
+}
+
+.start-menu-header-mark {
+  display: grid;
+  place-items: center;
+  width: 32px;
+  height: 32px;
+  flex: 0 0 32px;
+  border: 1px solid rgba(41,91,155,0.45);
+  border-radius: 5px;
+  background: radial-gradient(circle at 35% 25%, #7fd6ff, #1b68bf 62%, #0b2e78);
+  box-shadow: inset 0 1px 0 rgba(255,255,255,0.55), 0 1px 3px rgba(0,35,100,0.35);
+}
+
+.start-menu-header-mark svg {
+  width: 23px;
+  height: 23px;
+}
+
+.start-menu-heading {
+  min-width: 0;
+}
+
+.start-menu-title {
+  font-size: 13px;
+  font-weight: 700;
+  text-shadow: 0 1px 0 rgba(255,255,255,0.8);
+}
+
+.start-menu-subtitle {
+  margin-top: 2px;
+  color: #5c7692;
+  font-size: 10px;
+}
+
+.start-menu-search-wrap {
+  padding: 9px 10px 8px;
+  background: rgba(240,248,255,0.72);
+  border-bottom: 1px solid rgba(122,160,200,0.55);
+}
+
+#startMenuSearch {
+  width: 100%;
+  height: 29px;
+  padding: 0 9px;
+  border: 1px solid #789abd;
+  border-radius: 3px;
+  outline: none;
+  background: rgba(255,255,255,0.95);
+  color: #1d4165;
+  font-family: var(--font);
+  font-size: 11px;
+  box-shadow: inset 0 1px 2px rgba(30,70,110,0.15), 0 1px 0 rgba(255,255,255,0.7);
+}
+
+#startMenuSearch::placeholder {
+  color: #7890a6;
+}
+
+#startMenuSearch:focus {
+  border-color: #3d7bc8;
+  box-shadow: 0 0 0 2px rgba(76,145,220,0.2), inset 0 1px 2px rgba(30,70,110,0.12);
+}
+
+.start-menu-apps {
+  max-height: min(330px, calc(100vh - 235px));
+  overflow-y: auto;
+  padding: 7px;
+}
+
+.start-menu-app {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  min-height: 42px;
+  padding: 5px 8px;
+  border: 1px solid transparent;
+  border-radius: 3px;
+  background: transparent;
+  color: #1e456d;
+  font-family: var(--font);
+  text-align: left;
+  cursor: pointer;
+}
+
+.start-menu-app:hover,
+.start-menu-app:focus-visible {
+  border-color: rgba(74,132,193,0.7);
+  background: linear-gradient(180deg, rgba(255,255,255,0.75), rgba(180,217,249,0.76));
+  outline: none;
+}
+
+.start-menu-app-icon {
+  display: grid;
+  place-items: center;
+  width: 28px;
+  height: 28px;
+  flex: 0 0 28px;
+  border: 1px solid rgba(94,136,177,0.55);
+  border-radius: 4px;
+  background: linear-gradient(180deg, #ffffff, #c8dced);
+  box-shadow: 0 1px 2px rgba(24,62,100,0.25);
+  font-size: 16px;
+}
+
+.start-menu-app-copy {
+  min-width: 0;
+}
+
+.start-menu-app-name {
+  display: block;
+  color: #1a426a;
+  font-size: 11px;
+  font-weight: 700;
+}
+
+.start-menu-app-description {
+  display: block;
+  margin-top: 1px;
+  overflow: hidden;
+  color: #66819c;
+  font-size: 9px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.start-menu-no-results {
+  padding: 16px 9px;
+  color: #60758b;
+  font-size: 11px;
+  text-align: center;
+}
+
+@media (max-width: 700px) {
+  #startMenu {
+    left: 3px;
+    bottom: 39px;
+    width: min(330px, calc(100vw - 10px));
+  }
+
+  .start-menu-apps {
+    max-height: min(300px, calc(100vh - 220px));
+  }
 }
 
 /* ─── WIN7 SCROLLBAR GLOBAL ──────────────────── */
@@ -1640,6 +2356,32 @@ input[type="range"]#ampSlider::-moz-range-thumb {
           <path d="M33 10l-14 17h11l-4 11 15-19H30z" fill="#fff27a" stroke="#b77818" stroke-width="1"/>
         </svg>
         <span>My Computer</span>
+      </button>
+      <button class="desktop-icon" id="recycleBinIcon" type="button" title="Recycle Bin">
+        <svg viewBox="0 0 64 58" aria-hidden="true">
+          <path d="M19 14h26l-2 37H21z" fill="#d9e3ea" stroke="#365a73" stroke-width="2"/>
+          <path d="M16 11h32M25 7h14l3 4H22z" fill="#eef6fb" stroke="#365a73" stroke-width="2"/>
+          <path d="M27 19v25M33 19v25M39 19v25" stroke="#7894a8" stroke-width="2"/>
+          <path d="M15 51h34" stroke="#365a73" stroke-width="2" stroke-linecap="round"/>
+        </svg>
+        <span>Recycle Bin</span>
+      </button>
+      <button class="desktop-icon" id="chessDesktopIcon" type="button" title="Chess">
+        <svg viewBox="0 0 64 54" aria-hidden="true">
+          <path d="M25 6h14l-2 8 7 7-6 7 8 22H18l8-22-6-7 7-7z" fill="#f7fbff" stroke="#164b8f" stroke-width="2"/>
+          <path d="M17 50h30" stroke="#164b8f" stroke-width="3" stroke-linecap="round"/>
+          <path d="M28 14h9M24 22h16" stroke="#4d80b3" stroke-width="2" stroke-linecap="round"/>
+        </svg>
+        <span>Chess</span>
+      </button>
+      <button class="desktop-icon" id="cmdDesktopIcon" type="button" title="Windows CMD">
+        <svg viewBox="0 0 64 54" aria-hidden="true">
+          <rect x="5" y="5" width="54" height="42" rx="3" fill="#dcefff" stroke="#164b8f" stroke-width="2"/>
+          <rect x="9" y="9" width="46" height="34" fill="#111" stroke="#5e82a5" stroke-width="1.5"/>
+          <path d="M15 18l8 7-8 7M27 32h12" fill="none" stroke="#f2f2f2" stroke-width="2.5" stroke-linecap="square" stroke-linejoin="miter"/>
+          <path d="M18 48h28" stroke="#164b8f" stroke-width="3" stroke-linecap="round"/>
+        </svg>
+        <span>Windows CMD</span>
       </button>
       <button class="desktop-icon" id="notepadIcon" type="button" title="Notepad">
         <svg viewBox="0 0 64 54" aria-hidden="true">
@@ -1710,6 +2452,10 @@ input[type="range"]#ampSlider::-moz-range-thumb {
             <span class="storage-detail-label">Audio files</span>
             <span class="storage-detail-value" id="storageAudioValue">0 MB</span>
           </div>
+          <div class="storage-detail">
+            <span class="storage-detail-label">Chess</span>
+            <span class="storage-detail-value">60 MB</span>
+          </div>
         </div>
       </div>
       <div class="my-computer-files">
@@ -1722,6 +2468,95 @@ input[type="range"]#ampSlider::-moz-range-thumb {
         </div>
         <div id="audioFileList"></div>
       </div>
+    </div>
+  </section>
+
+  <!-- ── RECYCLE BIN WINDOW ── -->
+  <section id="recycleBinWindow" role="dialog" aria-labelledby="recycleBinTitle" aria-hidden="true">
+    <div class="system-title-bar">
+      <svg class="system-title-icon" viewBox="0 0 64 58" aria-hidden="true">
+        <path d="M19 14h26l-2 37H21z" fill="#d9e3ea" stroke="#365a73" stroke-width="2"/>
+        <path d="M16 11h32M25 7h14l3 4H22z" fill="#eef6fb" stroke="#365a73" stroke-width="2"/>
+        <path d="M27 19v25M33 19v25M39 19v25" stroke="#7894a8" stroke-width="2"/>
+      </svg>
+      <div class="win-title" id="recycleBinTitle">Recycle Bin</div>
+      <div class="win-buttons">
+        <button class="win-btn win-btn-min" id="recycleBinMinBtn" type="button" title="Minimize">─</button>
+        <button class="win-btn win-btn-max" id="recycleBinMaxBtn" type="button" title="Maximize">□</button>
+        <button class="win-btn win-btn-close" id="recycleBinCloseBtn" type="button" title="Close">✕</button>
+      </div>
+    </div>
+    <div class="system-window-body recycle-bin-content">
+      <div class="recycle-bin-toolbar">
+        <div class="recycle-bin-toolbar-copy">
+          <svg class="recycle-bin-toolbar-icon" viewBox="0 0 64 58" aria-hidden="true">
+            <path d="M19 14h26l-2 37H21z" fill="#d9e3ea" stroke="#365a73" stroke-width="2"/>
+            <path d="M16 11h32M25 7h14l3 4H22z" fill="#eef6fb" stroke="#365a73" stroke-width="2"/>
+            <path d="M27 19v25M33 19v25M39 19v25" stroke="#7894a8" stroke-width="2"/>
+          </svg>
+          <span id="recycleBinSummary">Recycle Bin is empty</span>
+        </div>
+        <button id="clearRecycleBinBtn" type="button">Clear the Recycle Bin</button>
+      </div>
+      <div id="recycleBinFileList"></div>
+    </div>
+  </section>
+
+  <!-- ── CHESS WINDOW ── -->
+  <section id="chessWindow" role="dialog" aria-labelledby="chessTitle" aria-hidden="true">
+    <div class="system-title-bar">
+      <svg class="system-title-icon" viewBox="0 0 64 54" aria-hidden="true">
+        <path d="M25 6h14l-2 8 7 7-6 7 8 22H18l8-22-6-7 7-7z" fill="#f7fbff" stroke="#164b8f" stroke-width="2"/>
+        <path d="M17 50h30" stroke="#164b8f" stroke-width="3" stroke-linecap="round"/>
+        <path d="M28 14h9M24 22h16" stroke="#4d80b3" stroke-width="2" stroke-linecap="round"/>
+      </svg>
+      <div class="win-title" id="chessTitle">Chess — Raisvoice AI</div>
+      <div class="win-buttons">
+        <button class="win-btn win-btn-min" id="chessMinBtn" type="button" title="Minimize">─</button>
+        <button class="win-btn win-btn-max" id="chessMaxBtn" type="button" title="Maximize">□</button>
+        <button class="win-btn win-btn-close" id="chessCloseBtn" type="button" title="Close">✕</button>
+      </div>
+    </div>
+    <div class="chess-content">
+      <div class="chess-toolbar">
+        <span class="chess-toolbar-title">You play White · Raisvoice AI plays Black</span>
+        <button class="chess-action-button" id="chessNewGameBtn" type="button">New Game</button>
+      </div>
+      <div class="chess-game-area">
+        <div class="chess-board-shell">
+          <div id="chessBoard" class="chess-board" role="grid" aria-label="Chess board"></div>
+        </div>
+        <aside class="chess-side-panel">
+          <div id="chessStatus" class="chess-status" aria-live="polite">Your move — White</div>
+          <div class="chess-legend">Click one of your pieces, then click a highlighted square to move.</div>
+          <div class="chess-tip">The AI considers tactics, captures, threats, and king safety before it moves.</div>
+        </aside>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── WINDOWS COMMAND PROMPT WINDOW ── -->
+  <section id="cmdWindow" role="dialog" aria-labelledby="cmdTitle" aria-hidden="true">
+    <div class="system-title-bar">
+      <svg class="cmd-title-icon" viewBox="0 0 64 54" aria-hidden="true">
+        <rect x="7" y="5" width="50" height="38" rx="2" fill="#e7f3ff" stroke="#164b8f" stroke-width="2"/>
+        <rect x="11" y="9" width="42" height="30" fill="#111" stroke="#4b7298" stroke-width="1.5"/>
+        <path d="M17 17l8 7-8 7M29 31h11" fill="none" stroke="#f2f2f2" stroke-width="2.5" stroke-linecap="square"/>
+        <path d="M18 48h28" stroke="#164b8f" stroke-width="3" stroke-linecap="round"/>
+      </svg>
+      <div class="win-title" id="cmdTitle">C:\Windows\system32\cmd.exe</div>
+      <div class="win-buttons">
+        <button class="win-btn win-btn-min" id="cmdMinBtn" type="button" title="Minimize">─</button>
+        <button class="win-btn win-btn-max" id="cmdMaxBtn" type="button" title="Maximize">□</button>
+        <button class="win-btn win-btn-close" id="cmdCloseBtn" type="button" title="Close">✕</button>
+      </div>
+    </div>
+    <div id="cmdConsole" class="cmd-console">
+      <div id="cmdOutput" class="cmd-output" aria-live="polite"></div>
+      <form id="cmdForm" class="cmd-input-row" autocomplete="off">
+        <span id="cmdPrompt" class="cmd-prompt">C:\Users\User&gt;</span>
+        <input id="cmdInput" type="text" spellcheck="false" aria-label="Command Prompt input" autocomplete="off">
+      </form>
     </div>
   </section>
 
@@ -2042,17 +2877,39 @@ input[type="range"]#ampSlider::-moz-range-thumb {
     </div><!-- /windowBody -->
   </div><!-- /mainWindow -->
 
+  <!-- ── WINDOWS APP LAUNCHER ── -->
+  <section id="startMenu" aria-label="Windows app launcher" aria-hidden="true">
+    <div class="start-menu-header">
+      <div class="start-menu-header-mark" aria-hidden="true">
+        <svg viewBox="0 0 24 24">
+          <path d="M2 4.2 10.8 3v8.2H2z" fill="#f45151"/>
+          <path d="M12.2 2.8 22 1.5v9.7h-9.8z" fill="#72d96f"/>
+          <path d="M2 12.8h8.8V21L2 19.8z" fill="#57a9ff"/>
+          <path d="M12.2 12.8H22v9.7l-9.8-1.4z" fill="#ffd45b"/>
+        </svg>
+      </div>
+      <div class="start-menu-heading">
+        <div class="start-menu-title">Windows</div>
+        <div class="start-menu-subtitle">Choose an application</div>
+      </div>
+    </div>
+    <div class="start-menu-search-wrap">
+      <input id="startMenuSearch" type="search" placeholder="Search apps..." aria-label="Search available apps" autocomplete="off">
+    </div>
+    <div id="startMenuApps" class="start-menu-apps" role="listbox" aria-label="Available applications"></div>
+  </section>
+
   <!-- ── TASKBAR ── -->
   <div id="taskbar">
     <!-- Kapat / Shut Down butonu -->
-    <div id="windowsStartLogo" title="Windows" aria-label="Windows">
+    <button id="windowsStartLogo" type="button" title="Open Windows app launcher" aria-label="Open Windows app launcher" aria-expanded="false">
       <svg viewBox="0 0 24 24" aria-hidden="true">
         <path d="M2 4.2 10.8 3v8.2H2z" fill="#f45151"/>
         <path d="M12.2 2.8 22 1.5v9.7h-9.8z" fill="#72d96f"/>
         <path d="M2 12.8h8.8V21L2 19.8z" fill="#57a9ff"/>
         <path d="M12.2 12.8H22v9.7l-9.8-1.4z" fill="#ffd45b"/>
       </svg>
-    </div>
+    </button>
     <button id="startBtn" title="Siteyi kapat">⏻ Kapat</button>
     <div class="taskbar-sep"></div>
     <!-- Uygulama butonu: logo + başlık, tıklayınca pencere açılır/kapanır -->
@@ -2530,12 +3387,22 @@ const desktopBg   = document.getElementById('desktopBg');
 const minBtn      = document.getElementById('minBtn');
 const taskbarItem = document.getElementById('taskbarItem');
 const myComputerIcon = document.getElementById('myComputerIcon');
+const recycleBinIcon = document.getElementById('recycleBinIcon');
+const chessDesktopIcon = document.getElementById('chessDesktopIcon');
+const cmdDesktopIcon = document.getElementById('cmdDesktopIcon');
 const myComputerWindow = document.getElementById('myComputerWindow');
 const myComputerCloseBtn = document.getElementById('myComputerCloseBtn');
 const myComputerMinBtn = document.getElementById('myComputerMinBtn');
 const myComputerMaxBtn = document.getElementById('myComputerMaxBtn');
 const audioFileList = document.getElementById('audioFileList');
 const audioFileSummary = document.getElementById('audioFileSummary');
+const recycleBinWindow = document.getElementById('recycleBinWindow');
+const recycleBinFileList = document.getElementById('recycleBinFileList');
+const recycleBinSummary = document.getElementById('recycleBinSummary');
+const clearRecycleBinBtn = document.getElementById('clearRecycleBinBtn');
+const recycleBinCloseBtn = document.getElementById('recycleBinCloseBtn');
+const recycleBinMinBtn = document.getElementById('recycleBinMinBtn');
+const recycleBinMaxBtn = document.getElementById('recycleBinMaxBtn');
 const storageUsageText = document.getElementById('storageUsageText');
 const storageMeterFill = document.getElementById('storageMeterFill');
 const storageFreeValue = document.getElementById('storageFreeValue');
@@ -2575,6 +3442,136 @@ const aboutWindow = document.getElementById('aboutWindow');
 const aboutCloseBtn = document.getElementById('aboutCloseBtn');
 const aboutMinBtn = document.getElementById('aboutMinBtn');
 const aboutMaxBtn = document.getElementById('aboutMaxBtn');
+const chessWindow = document.getElementById('chessWindow');
+const chessBoard = document.getElementById('chessBoard');
+const chessStatus = document.getElementById('chessStatus');
+const chessNewGameBtn = document.getElementById('chessNewGameBtn');
+const chessCloseBtn = document.getElementById('chessCloseBtn');
+const chessMinBtn = document.getElementById('chessMinBtn');
+const chessMaxBtn = document.getElementById('chessMaxBtn');
+const cmdWindow = document.getElementById('cmdWindow');
+const cmdTitle = document.getElementById('cmdTitle');
+const cmdConsole = document.getElementById('cmdConsole');
+const cmdOutput = document.getElementById('cmdOutput');
+const cmdForm = document.getElementById('cmdForm');
+const cmdInput = document.getElementById('cmdInput');
+const cmdPrompt = document.getElementById('cmdPrompt');
+const cmdCloseBtn = document.getElementById('cmdCloseBtn');
+const cmdMinBtn = document.getElementById('cmdMinBtn');
+const cmdMaxBtn = document.getElementById('cmdMaxBtn');
+const windowsStartLogo = document.getElementById('windowsStartLogo');
+const startMenu = document.getElementById('startMenu');
+const startMenuSearch = document.getElementById('startMenuSearch');
+const startMenuApps = document.getElementById('startMenuApps');
+
+const availableApps = [
+  {
+    name: 'Sound Wave Simulation',
+    description: 'Main visualizer',
+    icon: '🔊',
+    action: () => {
+      if (mainWindow.classList.contains('minimized')) restoreWindow();
+      else taskbarItem.focus();
+    }
+  },
+  { name: 'My Computer', description: 'Browse local audio files', icon: '🖥️', action: openMyComputer },
+  { name: 'Recycle Bin', description: 'Restore or permanently delete files', icon: '♻️', action: openRecycleBin },
+  { name: 'Notepad', description: 'Create and edit text files', icon: '📝', action: () => openNotepad() },
+  { name: 'Google Chrome', description: 'Open the virtual browser', icon: '🌐', action: openChrome },
+  { name: 'Chess', description: 'Play against Raisvoice AI', icon: '♟️', action: openChess },
+  { name: 'Windows CMD', description: 'Use the command prompt', icon: '⌨️', action: openCmd },
+  { name: 'About', description: 'Learn about Sound Wave Simulation', icon: 'ⓘ', action: openAbout }
+];
+
+function closeStartMenu() {
+  startMenu.classList.remove('open');
+  startMenu.setAttribute('aria-hidden', 'true');
+  windowsStartLogo.setAttribute('aria-expanded', 'false');
+}
+
+function renderStartMenuApps(searchTerm = '') {
+  const query = searchTerm.trim().toLowerCase();
+  const matchingApps = availableApps.filter(app =>
+    `${app.name} ${app.description}`.toLowerCase().includes(query)
+  );
+
+  startMenuApps.replaceChildren();
+
+  if (!matchingApps.length) {
+    const noResults = document.createElement('div');
+    noResults.className = 'start-menu-no-results';
+    noResults.textContent = 'No apps match your search.';
+    startMenuApps.appendChild(noResults);
+    return;
+  }
+
+  matchingApps.forEach(app => {
+    const appButton = document.createElement('button');
+    appButton.className = 'start-menu-app';
+    appButton.type = 'button';
+    appButton.setAttribute('role', 'option');
+
+    const icon = document.createElement('span');
+    icon.className = 'start-menu-app-icon';
+    icon.textContent = app.icon;
+    icon.setAttribute('aria-hidden', 'true');
+
+    const copy = document.createElement('span');
+    copy.className = 'start-menu-app-copy';
+
+    const name = document.createElement('span');
+    name.className = 'start-menu-app-name';
+    name.textContent = app.name;
+
+    const description = document.createElement('span');
+    description.className = 'start-menu-app-description';
+    description.textContent = app.description;
+
+    copy.append(name, description);
+    appButton.append(icon, copy);
+    appButton.addEventListener('click', () => {
+      closeStartMenu();
+      app.action();
+    });
+    startMenuApps.appendChild(appButton);
+  });
+}
+
+function openStartMenu() {
+  const willOpen = !startMenu.classList.contains('open');
+  if (!willOpen) {
+    closeStartMenu();
+    return;
+  }
+
+  renderStartMenuApps();
+  startMenu.classList.add('open');
+  startMenu.setAttribute('aria-hidden', 'false');
+  windowsStartLogo.setAttribute('aria-expanded', 'true');
+  window.setTimeout(() => startMenuSearch.focus(), 0);
+}
+
+windowsStartLogo.addEventListener('click', openStartMenu);
+startMenuSearch.addEventListener('input', () => {
+  renderStartMenuApps(startMenuSearch.value);
+});
+startMenuSearch.addEventListener('keydown', event => {
+  if (event.key !== 'Escape') return;
+  event.preventDefault();
+  closeStartMenu();
+  windowsStartLogo.focus();
+});
+document.addEventListener('pointerdown', event => {
+  if (!startMenu.classList.contains('open')) return;
+  if (startMenu.contains(event.target) || windowsStartLogo.contains(event.target)) return;
+  closeStartMenu();
+});
+document.addEventListener('keydown', event => {
+  if (event.key === 'Escape' && startMenu.classList.contains('open')) {
+    closeStartMenu();
+    windowsStartLogo.focus();
+  }
+});
 
 // =====================================================================
 //  MY COMPUTER — LOCAL AUDIO LIBRARY
@@ -2584,6 +3581,7 @@ const STORAGE_TOTAL_MB = 1024;
 const CHROME_STORAGE_MB = 50;
 const SOUND_SIMULATOR_STORAGE_MB = 239;
 const NOTE_STORAGE_MB = 10;
+const CHESS_STORAGE_MB = 60;
 
 function getStoredAudioFiles() {
   try {
@@ -2604,6 +3602,47 @@ function setStoredAudioFiles(files) {
   }
 }
 
+const RECYCLE_BIN_STORAGE_KEY = 'raisvoice.recycleBin';
+
+function getRecycleBinFiles() {
+  try {
+    const raw = localStorage.getItem(RECYCLE_BIN_STORAGE_KEY);
+    const files = raw ? JSON.parse(raw) : [];
+    return Array.isArray(files) ? files : [];
+  } catch (_) {
+    return [];
+  }
+}
+
+function setRecycleBinFiles(files) {
+  try {
+    if (files.length) localStorage.setItem(RECYCLE_BIN_STORAGE_KEY, JSON.stringify(files));
+    else localStorage.removeItem(RECYCLE_BIN_STORAGE_KEY);
+    return true;
+  } catch (_) {
+    return false;
+  }
+}
+
+function makeRecycleBinId() {
+  if (window.crypto && typeof window.crypto.randomUUID === 'function') {
+    return window.crypto.randomUUID();
+  }
+  return 'recycle-' + Date.now() + '-' + Math.random().toString(36).slice(2);
+}
+
+function moveToRecycleBin(kind, item) {
+  const recycleRecord = {
+    id: makeRecycleBinId(),
+    kind,
+    name: item.name,
+    size: Number(item.size) || (kind === 'note' ? Math.max(1, item.content.length * 2) : 0),
+    deletedAt: new Date().toISOString(),
+    item
+  };
+  return setRecycleBinFiles([recycleRecord, ...getRecycleBinFiles()]);
+}
+
 function getStoredAudioSizeMb(files = getStoredAudioFiles()) {
   return files.reduce((total, file) => {
     const bytes = Number(file.size);
@@ -2620,7 +3659,7 @@ function updateStorageUsage() {
   const audioMb = getStoredAudioSizeMb();
   const notes = getStoredNotes();
   const notesMb = notes.length * NOTE_STORAGE_MB;
-  const usedMb = CHROME_STORAGE_MB + SOUND_SIMULATOR_STORAGE_MB + notesMb + audioMb;
+  const usedMb = CHROME_STORAGE_MB + SOUND_SIMULATOR_STORAGE_MB + CHESS_STORAGE_MB + notesMb + audioMb;
   const freeMb = Math.max(0, STORAGE_TOTAL_MB - usedMb);
   const usedPercent = Math.min(100, (usedMb / STORAGE_TOTAL_MB) * 100);
 
@@ -2712,7 +3751,11 @@ function renderAudioFileList() {
     deleteButton.textContent = 'Delete';
     deleteButton.addEventListener('click', () => {
       const remaining = getStoredAudioFiles().filter(file => file.id !== savedFile.id);
-      if (setStoredAudioFiles(remaining)) renderAudioFileList();
+      if (!moveToRecycleBin('audio', savedFile)) return;
+      if (setStoredAudioFiles(remaining)) {
+        renderAudioFileList();
+        renderRecycleBin();
+      }
     });
 
     row.append(icon, info, openButton, deleteButton);
@@ -2737,6 +3780,110 @@ myComputerCloseBtn.addEventListener('click', closeMyComputer);
 myComputerMinBtn.addEventListener('click', closeMyComputer);
 myComputerMaxBtn.addEventListener('click', () => {
   myComputerWindow.classList.toggle('maximized');
+});
+
+function openRecycleBin() {
+  renderRecycleBin();
+  recycleBinWindow.classList.add('open');
+  recycleBinWindow.setAttribute('aria-hidden', 'false');
+}
+
+function closeRecycleBin() {
+  recycleBinWindow.classList.remove('open', 'maximized');
+  recycleBinWindow.setAttribute('aria-hidden', 'true');
+}
+
+function restoreRecycleBinFile(recycleRecord) {
+  const recycledFiles = getRecycleBinFiles();
+  const remaining = recycledFiles.filter(file => file.id !== recycleRecord.id);
+  if (recycleRecord.kind === 'audio') {
+    const currentFiles = getStoredAudioFiles();
+    if (!currentFiles.some(file => file.id === recycleRecord.item.id)) {
+      if (!setStoredAudioFiles([recycleRecord.item, ...currentFiles])) return;
+    }
+  } else if (recycleRecord.kind === 'note') {
+    const currentNotes = getStoredNotes();
+    if (!currentNotes.some(note => note.id === recycleRecord.item.id)) {
+      if (!setStoredNotes([recycleRecord.item, ...currentNotes])) return;
+    }
+  }
+  if (!setRecycleBinFiles(remaining)) return;
+  renderRecycleBin();
+  renderAudioFileList();
+  renderSavedNoteIcons();
+  updateStorageUsage();
+}
+
+function renderRecycleBin() {
+  const recycledFiles = getRecycleBinFiles();
+  recycleBinFileList.replaceChildren();
+  recycleBinSummary.textContent = recycledFiles.length
+    ? `${recycledFiles.length} deleted file${recycledFiles.length === 1 ? '' : 's'}`
+    : 'Recycle Bin is empty';
+  clearRecycleBinBtn.disabled = recycledFiles.length === 0;
+
+  if (!recycledFiles.length) {
+    const empty = document.createElement('div');
+    empty.className = 'recycle-bin-empty';
+    empty.textContent = 'Files you delete will appear here.';
+    recycleBinFileList.appendChild(empty);
+    return;
+  }
+
+  recycledFiles.forEach(recycleRecord => {
+    const row = document.createElement('div');
+    row.className = 'recycle-bin-row';
+
+    const icon = document.createElement('div');
+    icon.className = 'recycle-bin-file-icon';
+    icon.textContent = recycleRecord.kind === 'audio' ? '🎵' : '📄';
+    icon.setAttribute('aria-hidden', 'true');
+
+    const info = document.createElement('div');
+    info.className = 'recycle-bin-file-info';
+    const name = document.createElement('span');
+    name.className = 'recycle-bin-file-name';
+    name.textContent = recycleRecord.name;
+    name.title = recycleRecord.name;
+    const meta = document.createElement('span');
+    meta.className = 'recycle-bin-file-meta';
+    const deletedAt = new Date(recycleRecord.deletedAt);
+    const dateText = Number.isNaN(deletedAt.getTime()) ? 'Deleted file' : `Deleted ${deletedAt.toLocaleString()}`;
+    meta.textContent = `${recycleRecord.kind === 'audio' ? 'Audio file' : 'Text file'} · ${dateText}`;
+    info.append(name, meta);
+
+    const restoreButton = document.createElement('button');
+    restoreButton.className = 'audio-file-action';
+    restoreButton.type = 'button';
+    restoreButton.textContent = 'Restore';
+    restoreButton.addEventListener('click', () => restoreRecycleBinFile(recycleRecord));
+
+    const destroyButton = document.createElement('button');
+    destroyButton.className = 'audio-file-action audio-file-delete';
+    destroyButton.type = 'button';
+    destroyButton.textContent = 'Delete permanently';
+    destroyButton.addEventListener('click', () => {
+      if (!window.confirm(`Permanently delete "${recycleRecord.name}"?`)) return;
+      setRecycleBinFiles(getRecycleBinFiles().filter(file => file.id !== recycleRecord.id));
+      renderRecycleBin();
+    });
+
+    row.append(icon, info, restoreButton, destroyButton);
+    recycleBinFileList.appendChild(row);
+  });
+}
+
+recycleBinIcon.addEventListener('click', openRecycleBin);
+recycleBinCloseBtn.addEventListener('click', closeRecycleBin);
+recycleBinMinBtn.addEventListener('click', closeRecycleBin);
+recycleBinMaxBtn.addEventListener('click', () => {
+  recycleBinWindow.classList.toggle('maximized');
+});
+clearRecycleBinBtn.addEventListener('click', () => {
+  const recycledFiles = getRecycleBinFiles();
+  if (!recycledFiles.length) return;
+  if (!window.confirm('Clear the Recycle Bin? These files will be destroyed permanently.')) return;
+  if (setRecycleBinFiles([])) renderRecycleBin();
 });
 
 // =====================================================================
@@ -2781,9 +3928,12 @@ function normalizeNoteName(name) {
 }
 
 function renderSavedNoteIcons() {
-  document.querySelectorAll('.saved-note-icon').forEach(icon => icon.remove());
+  document.querySelectorAll('.saved-note-entry').forEach(entry => entry.remove());
 
   getStoredNotes().forEach(note => {
+    const noteEntry = document.createElement('div');
+    noteEntry.className = 'saved-note-entry';
+
     const noteButton = document.createElement('button');
     noteButton.className = 'desktop-icon saved-note-icon';
     noteButton.type = 'button';
@@ -2801,7 +3951,37 @@ function renderSavedNoteIcons() {
     label.textContent = note.name;
     noteButton.appendChild(label);
     noteButton.addEventListener('click', () => openNote(note.id));
-    document.getElementById('desktopIcons').appendChild(noteButton);
+
+    const deleteButton = document.createElement('button');
+    deleteButton.className = 'note-delete-action';
+    deleteButton.type = 'button';
+    deleteButton.textContent = 'Delete';
+    deleteButton.title = `Delete ${note.name}`;
+    deleteButton.setAttribute('aria-label', `Delete ${note.name}`);
+    deleteButton.addEventListener('click', event => {
+      event.stopPropagation();
+      const remainingNotes = getStoredNotes().filter(savedNote => savedNote.id !== note.id);
+      if (!moveToRecycleBin('note', note)) return;
+      if (!setStoredNotes(remainingNotes)) return;
+      if (activeNoteId === note.id) {
+        activeNoteId = null;
+        closeNotepad();
+      }
+      renderSavedNoteIcons();
+      renderRecycleBin();
+      updateStorageUsage();
+    });
+
+    noteButton.addEventListener('dblclick', event => {
+      event.preventDefault();
+      event.stopPropagation();
+      document.querySelectorAll('.saved-note-entry.delete-visible')
+        .forEach(entry => entry.classList.remove('delete-visible'));
+      noteEntry.classList.add('delete-visible');
+    });
+
+    noteEntry.append(noteButton, deleteButton);
+    document.getElementById('desktopIcons').appendChild(noteEntry);
   });
 }
 
@@ -3106,6 +4286,897 @@ aboutCloseBtn.addEventListener('click', closeAbout);
 aboutMinBtn.addEventListener('click', closeAbout);
 aboutMaxBtn.addEventListener('click', () => {
   aboutWindow.classList.toggle('maximized');
+});
+
+// =====================================================================
+//  CHESS — HUMAN VS RAISVOICE AI
+// =====================================================================
+const chessPieceGlyphs = {
+  w: { k: '♔', q: '♕', r: '♖', b: '♗', n: '♘', p: '♙' },
+  b: { k: '♚', q: '♛', r: '♜', b: '♝', n: '♞', p: '♟' }
+};
+const chessPieceValues = { p: 100, n: 320, b: 330, r: 500, q: 900, k: 20000 };
+const chessCenterSquares = [
+  [3, 3], [3, 4], [4, 3], [4, 4],
+  [2, 2], [2, 5], [5, 2], [5, 5]
+];
+let chessState = null;
+let chessSelected = null;
+let chessLegalTargets = [];
+let chessThinking = false;
+let chessGameOver = false;
+let chessLastMove = null;
+let chessMoveTimer = null;
+
+function createChessBoard() {
+  const backRank = ['r', 'n', 'b', 'q', 'k', 'b', 'n', 'r'];
+  const board = Array.from({ length: 8 }, () => Array(8).fill(null));
+  board[0] = backRank.map(type => ({ type, color: 'b' }));
+  board[1] = Array.from({ length: 8 }, () => ({ type: 'p', color: 'b' }));
+  board[6] = Array.from({ length: 8 }, () => ({ type: 'p', color: 'w' }));
+  board[7] = backRank.map(type => ({ type, color: 'w' }));
+  return board;
+}
+
+function newChessState() {
+  return {
+    board: createChessBoard(),
+    turn: 'w',
+    castling: { wK: true, wQ: true, bK: true, bQ: true },
+    enPassant: null,
+    halfmove: 0,
+    moveNumber: 1
+  };
+}
+
+function cloneChessState(state) {
+  return {
+    board: state.board.map(row => row.map(piece => piece ? { ...piece } : null)),
+    turn: state.turn,
+    castling: { ...state.castling },
+    enPassant: state.enPassant ? [...state.enPassant] : null,
+    halfmove: state.halfmove,
+    moveNumber: state.moveNumber
+  };
+}
+
+function chessInBounds(row, col) {
+  return row >= 0 && row < 8 && col >= 0 && col < 8;
+}
+
+function chessOtherColor(color) {
+  return color === 'w' ? 'b' : 'w';
+}
+
+function chessFindKing(state, color) {
+  for (let row = 0; row < 8; row++) {
+    for (let col = 0; col < 8; col++) {
+      const piece = state.board[row][col];
+      if (piece && piece.color === color && piece.type === 'k') return [row, col];
+    }
+  }
+  return null;
+}
+
+function chessSquareAttacked(state, row, col, byColor) {
+  const pawnRow = byColor === 'w' ? row + 1 : row - 1;
+  for (const pawnCol of [col - 1, col + 1]) {
+    const pawn = chessInBounds(pawnRow, pawnCol) && state.board[pawnRow][pawnCol];
+    if (pawn && pawn.color === byColor && pawn.type === 'p') return true;
+  }
+
+  const knightSteps = [[-2, -1], [-2, 1], [-1, -2], [-1, 2],
+    [1, -2], [1, 2], [2, -1], [2, 1]];
+  for (const [dr, dc] of knightSteps) {
+    const piece = chessInBounds(row + dr, col + dc) && state.board[row + dr][col + dc];
+    if (piece && piece.color === byColor && piece.type === 'n') return true;
+  }
+
+  for (const [dr, dc] of [[-1, 0], [1, 0], [0, -1], [0, 1]]) {
+    let nextRow = row + dr;
+    let nextCol = col + dc;
+    while (chessInBounds(nextRow, nextCol)) {
+      const piece = state.board[nextRow][nextCol];
+      if (piece) {
+        if (piece.color === byColor && (piece.type === 'r' || piece.type === 'q')) return true;
+        break;
+      }
+      nextRow += dr;
+      nextCol += dc;
+    }
+  }
+
+  for (const [dr, dc] of [[-1, -1], [-1, 1], [1, -1], [1, 1]]) {
+    let nextRow = row + dr;
+    let nextCol = col + dc;
+    while (chessInBounds(nextRow, nextCol)) {
+      const piece = state.board[nextRow][nextCol];
+      if (piece) {
+        if (piece.color === byColor && (piece.type === 'b' || piece.type === 'q')) return true;
+        break;
+      }
+      nextRow += dr;
+      nextCol += dc;
+    }
+  }
+
+  for (const dr of [-1, 0, 1]) {
+    for (const dc of [-1, 0, 1]) {
+      if (!dr && !dc) continue;
+      const piece = chessInBounds(row + dr, col + dc) && state.board[row + dr][col + dc];
+      if (piece && piece.color === byColor && piece.type === 'k') return true;
+    }
+  }
+  return false;
+}
+
+function chessKingInCheck(state, color) {
+  const king = chessFindKing(state, color);
+  return !king || chessSquareAttacked(state, king[0], king[1], chessOtherColor(color));
+}
+
+function addChessMove(moves, fromRow, fromCol, toRow, toCol, extras = {}) {
+  moves.push({
+    from: [fromRow, fromCol],
+    to: [toRow, toCol],
+    ...extras
+  });
+}
+
+function generateChessPseudoMoves(state, color) {
+  const moves = [];
+  const board = state.board;
+  const addStep = (row, col, nextRow, nextCol, extras = {}) => {
+    if (!chessInBounds(nextRow, nextCol)) return false;
+    const target = board[nextRow][nextCol];
+    if (!target) {
+      addChessMove(moves, row, col, nextRow, nextCol, extras);
+      return true;
+    }
+    if (target.color !== color && target.type !== 'k') {
+      addChessMove(moves, row, col, nextRow, nextCol, { ...extras, capture: true });
+    }
+    return false;
+  };
+
+  for (let row = 0; row < 8; row++) {
+    for (let col = 0; col < 8; col++) {
+      const piece = board[row][col];
+      if (!piece || piece.color !== color) continue;
+
+      if (piece.type === 'p') {
+        const direction = color === 'w' ? -1 : 1;
+        const startRow = color === 'w' ? 6 : 1;
+        const promotionRow = color === 'w' ? 0 : 7;
+        const oneRow = row + direction;
+        if (chessInBounds(oneRow, col) && !board[oneRow][col]) {
+          addChessMove(moves, row, col, oneRow, col,
+            oneRow === promotionRow ? { promotion: 'q' } : {});
+          const twoRow = row + direction * 2;
+          if (row === startRow && !board[twoRow][col]) {
+            addChessMove(moves, row, col, twoRow, col);
+          }
+        }
+        for (const captureCol of [col - 1, col + 1]) {
+          if (!chessInBounds(oneRow, captureCol)) continue;
+          const target = board[oneRow][captureCol];
+          if (target && target.color !== color && target.type !== 'k') {
+            addChessMove(moves, row, col, oneRow, captureCol, {
+              capture: true,
+              ...(oneRow === promotionRow ? { promotion: 'q' } : {})
+            });
+          } else if (state.enPassant &&
+              state.enPassant[0] === oneRow && state.enPassant[1] === captureCol) {
+            addChessMove(moves, row, col, oneRow, captureCol, { enPassant: true, capture: true });
+          }
+        }
+        continue;
+      }
+
+      if (piece.type === 'n') {
+        for (const [dr, dc] of [[-2, -1], [-2, 1], [-1, -2], [-1, 2],
+          [1, -2], [1, 2], [2, -1], [2, 1]]) {
+          addStep(row, col, row + dr, col + dc);
+        }
+        continue;
+      }
+
+      if (piece.type === 'k') {
+        for (const dr of [-1, 0, 1]) {
+          for (const dc of [-1, 0, 1]) {
+            if (dr || dc) addStep(row, col, row + dr, col + dc);
+          }
+        }
+        const homeRow = color === 'w' ? 7 : 0;
+        if (row === homeRow && col === 4 && !chessKingInCheck(state, color)) {
+          const kingSide = state.castling[color + 'K'];
+          if (kingSide && !board[homeRow][5] && !board[homeRow][6] &&
+              board[homeRow][7] && board[homeRow][7].type === 'r' &&
+              board[homeRow][7].color === color &&
+              !chessSquareAttacked(state, homeRow, 5, chessOtherColor(color)) &&
+              !chessSquareAttacked(state, homeRow, 6, chessOtherColor(color))) {
+            addChessMove(moves, row, col, homeRow, 6, { castle: 'K' });
+          }
+          const queenSide = state.castling[color + 'Q'];
+          if (queenSide && !board[homeRow][1] && !board[homeRow][2] && !board[homeRow][3] &&
+              board[homeRow][0] && board[homeRow][0].type === 'r' &&
+              board[homeRow][0].color === color &&
+              !chessSquareAttacked(state, homeRow, 3, chessOtherColor(color)) &&
+              !chessSquareAttacked(state, homeRow, 2, chessOtherColor(color))) {
+            addChessMove(moves, row, col, homeRow, 2, { castle: 'Q' });
+          }
+        }
+        continue;
+      }
+
+      const directions = piece.type === 'b'
+        ? [[-1, -1], [-1, 1], [1, -1], [1, 1]]
+        : piece.type === 'r'
+          ? [[-1, 0], [1, 0], [0, -1], [0, 1]]
+          : [[-1, -1], [-1, 1], [1, -1], [1, 1],
+            [-1, 0], [1, 0], [0, -1], [0, 1]];
+      for (const [dr, dc] of directions) {
+        let nextRow = row + dr;
+        let nextCol = col + dc;
+        while (addStep(row, col, nextRow, nextCol)) {
+          nextRow += dr;
+          nextCol += dc;
+        }
+      }
+    }
+  }
+  return moves;
+}
+
+function makeChessMove(state, move) {
+  const next = cloneChessState(state);
+  const [fromRow, fromCol] = move.from;
+  const [toRow, toCol] = move.to;
+  const piece = next.board[fromRow][fromCol];
+  const captured = next.board[toRow][toCol];
+  next.board[fromRow][fromCol] = null;
+  next.board[toRow][toCol] = piece;
+
+  if (move.enPassant) {
+    next.board[toRow + (piece.color === 'w' ? 1 : -1)][toCol] = null;
+  }
+  if (move.promotion) next.board[toRow][toCol] = { type: move.promotion, color: piece.color };
+
+  if (piece.type === 'k') {
+    next.castling[piece.color + 'K'] = false;
+    next.castling[piece.color + 'Q'] = false;
+    if (move.castle === 'K') {
+      next.board[toRow][5] = next.board[toRow][7];
+      next.board[toRow][7] = null;
+    } else if (move.castle === 'Q') {
+      next.board[toRow][3] = next.board[toRow][0];
+      next.board[toRow][0] = null;
+    }
+  }
+  if (piece.type === 'r') {
+    if (fromRow === 7 && fromCol === 0) next.castling.wQ = false;
+    if (fromRow === 7 && fromCol === 7) next.castling.wK = false;
+    if (fromRow === 0 && fromCol === 0) next.castling.bQ = false;
+    if (fromRow === 0 && fromCol === 7) next.castling.bK = false;
+  }
+  if (captured && captured.type === 'r') {
+    if (toRow === 7 && toCol === 0) next.castling.wQ = false;
+    if (toRow === 7 && toCol === 7) next.castling.wK = false;
+    if (toRow === 0 && toCol === 0) next.castling.bQ = false;
+    if (toRow === 0 && toCol === 7) next.castling.bK = false;
+  }
+
+  next.enPassant = null;
+  if (piece.type === 'p' && Math.abs(toRow - fromRow) === 2) {
+    next.enPassant = [(fromRow + toRow) / 2, fromCol];
+  }
+  next.halfmove = piece.type === 'p' || captured || move.enPassant ? 0 : next.halfmove + 1;
+  if (piece.color === 'b') next.moveNumber += 1;
+  next.turn = chessOtherColor(state.turn);
+  return next;
+}
+
+function generateChessLegalMoves(state, color = state.turn) {
+  return generateChessPseudoMoves(state, color).filter(move => {
+    const next = makeChessMove(state, move);
+    return !chessKingInCheck(next, color);
+  });
+}
+
+function chessMoveKey(move) {
+  return move.from.join('') + move.to.join('') + (move.promotion || '');
+}
+
+function chessMoveIsSame(a, b) {
+  return a && b && chessMoveKey(a) === chessMoveKey(b);
+}
+
+function chessEvaluate(state) {
+  let score = 0;
+  for (let row = 0; row < 8; row++) {
+    for (let col = 0; col < 8; col++) {
+      const piece = state.board[row][col];
+      if (!piece) continue;
+      let value = chessPieceValues[piece.type];
+      const centerDistance = Math.abs(3.5 - row) + Math.abs(3.5 - col);
+      if (piece.type === 'n' || piece.type === 'b') value += Math.max(0, 4 - centerDistance) * 9;
+      if (piece.type === 'p') value += (piece.color === 'b' ? row : 7 - row) * 5;
+      if (piece.type === 'k' && (col === 2 || col === 6)) value += 30;
+      score += piece.color === 'b' ? value : -value;
+    }
+  }
+  for (const [row, col] of chessCenterSquares) {
+    const piece = state.board[row][col];
+    if (piece) score += piece.color === 'b' ? 12 : -12;
+  }
+  return score;
+}
+
+function orderChessMoves(state, moves) {
+  return moves.slice().sort((a, b) => {
+    const score = move => {
+      const target = state.board[move.to[0]][move.to[1]];
+      const moving = state.board[move.from[0]][move.from[1]];
+      return (target ? chessPieceValues[target.type] * 10 - chessPieceValues[moving.type] : 0)
+        + (move.promotion ? 9000 : 0) + (move.castle ? 40 : 0);
+    };
+    return score(b) - score(a);
+  });
+}
+
+function chessSearch(state, depth, alpha, beta) {
+  const moves = generateChessLegalMoves(state);
+  if (!moves.length) {
+    if (chessKingInCheck(state, state.turn)) {
+      return state.turn === 'b' ? -999999 - depth : 999999 + depth;
+    }
+    return 0;
+  }
+  if (!depth) return chessEvaluate(state);
+
+  const maximizing = state.turn === 'b';
+  let best = maximizing ? -Infinity : Infinity;
+  for (const move of orderChessMoves(state, moves)) {
+    const value = chessSearch(makeChessMove(state, move), depth - 1, alpha, beta);
+    if (maximizing) {
+      best = Math.max(best, value);
+      alpha = Math.max(alpha, best);
+    } else {
+      best = Math.min(best, value);
+      beta = Math.min(beta, best);
+    }
+    if (beta <= alpha) break;
+  }
+  return best;
+}
+
+function chooseChessAiMove() {
+  const moves = orderChessMoves(chessState, generateChessLegalMoves(chessState, 'b'));
+  let bestMove = null;
+  let bestScore = -Infinity;
+  const searchDepth = moves.length > 28 ? 2 : 3;
+  for (const move of moves) {
+    const score = chessSearch(makeChessMove(chessState, move), searchDepth - 1, -Infinity, Infinity);
+    if (score > bestScore) {
+      bestScore = score;
+      bestMove = move;
+    }
+  }
+  return bestMove;
+}
+
+function updateChessStatus() {
+  if (!chessState) return;
+  const legalMoves = generateChessLegalMoves(chessState);
+  if (!legalMoves.length) {
+    chessGameOver = true;
+    chessStatus.className = 'chess-status ' + (chessKingInCheck(chessState, chessState.turn)
+      ? (chessState.turn === 'w' ? 'loser' : 'winner') : '');
+    chessStatus.textContent = chessKingInCheck(chessState, chessState.turn)
+      ? (chessState.turn === 'w' ? 'Checkmate — Raisvoice AI wins' : 'Checkmate — You win')
+      : 'Draw — Stalemate';
+    return;
+  }
+  if (chessState.halfmove >= 100) {
+    chessGameOver = true;
+    chessStatus.className = 'chess-status';
+    chessStatus.textContent = 'Draw — 50-move rule';
+    return;
+  }
+  chessGameOver = false;
+  chessStatus.className = 'chess-status' + (chessState.turn === 'b' ? ' thinking' : '');
+  chessStatus.textContent = chessState.turn === 'w'
+    ? (chessKingInCheck(chessState, 'w') ? 'Check — Your move' : 'Your move — White')
+    : 'Raisvoice AI is thinking...';
+}
+
+function renderChessBoard() {
+  chessBoard.replaceChildren();
+  const whiteKing = chessFindKing(chessState, 'w');
+  const blackKing = chessFindKing(chessState, 'b');
+  for (let row = 0; row < 8; row++) {
+    for (let col = 0; col < 8; col++) {
+      const square = document.createElement('button');
+      const piece = chessState.board[row][col];
+      const isSelected = chessSelected && chessSelected[0] === row && chessSelected[1] === col;
+      const targetMove = chessLegalTargets.find(move => move.to[0] === row && move.to[1] === col);
+      const isInCheck = (whiteKing && whiteKing[0] === row && whiteKing[1] === col &&
+        chessKingInCheck(chessState, 'w')) ||
+        (blackKing && blackKing[0] === row && blackKing[1] === col &&
+        chessKingInCheck(chessState, 'b'));
+      square.type = 'button';
+      square.className = 'chess-square ' + ((row + col) % 2 ? 'dark' : 'light');
+      if (isSelected) square.classList.add('selected');
+      if (targetMove) {
+        square.classList.add('legal-move');
+        if (piece) square.classList.add('capture');
+      }
+      if (chessLastMove &&
+          ((chessLastMove.from[0] === row && chessLastMove.from[1] === col) ||
+           (chessLastMove.to[0] === row && chessLastMove.to[1] === col))) {
+        square.classList.add('last-move');
+      }
+      if (isInCheck) square.classList.add('in-check');
+      square.setAttribute('role', 'gridcell');
+      square.setAttribute('aria-label', `${String.fromCharCode(97 + col)}${8 - row}`);
+      square.addEventListener('click', () => handleChessSquareClick(row, col));
+      if (piece) {
+        const pieceElement = document.createElement('span');
+        pieceElement.className = 'chess-piece ' + (piece.color === 'w' ? 'white' : 'black');
+        pieceElement.textContent = chessPieceGlyphs[piece.color][piece.type];
+        square.appendChild(pieceElement);
+      }
+      chessBoard.appendChild(square);
+    }
+  }
+}
+
+function handleChessSquareClick(row, col) {
+  if (chessThinking || chessGameOver || chessState.turn !== 'w') return;
+  const chosenMove = chessLegalTargets.find(move => move.to[0] === row && move.to[1] === col);
+  if (chosenMove) {
+    chessState = makeChessMove(chessState, chosenMove);
+    chessLastMove = chosenMove;
+    chessSelected = null;
+    chessLegalTargets = [];
+    renderChessBoard();
+    updateChessStatus();
+    if (!chessGameOver) {
+      chessThinking = true;
+      chessStatus.className = 'chess-status thinking';
+      chessStatus.textContent = 'Raisvoice AI is thinking...';
+      chessMoveTimer = window.setTimeout(playChessAiTurn, 160);
+    }
+    return;
+  }
+  const piece = chessState.board[row][col];
+  if (piece && piece.color === 'w') {
+    chessSelected = [row, col];
+    chessLegalTargets = generateChessLegalMoves(chessState, 'w')
+      .filter(move => move.from[0] === row && move.from[1] === col);
+  } else {
+    chessSelected = null;
+    chessLegalTargets = [];
+  }
+  renderChessBoard();
+}
+
+function playChessAiTurn() {
+  chessMoveTimer = null;
+  if (chessGameOver || chessState.turn !== 'b') return;
+  const move = chooseChessAiMove();
+  chessThinking = false;
+  if (move) {
+    chessState = makeChessMove(chessState, move);
+    chessLastMove = move;
+  }
+  renderChessBoard();
+  updateChessStatus();
+}
+
+function resetChessGame() {
+  window.clearTimeout(chessMoveTimer);
+  chessMoveTimer = null;
+  chessState = newChessState();
+  chessSelected = null;
+  chessLegalTargets = [];
+  chessThinking = false;
+  chessGameOver = false;
+  chessLastMove = null;
+  renderChessBoard();
+  updateChessStatus();
+}
+
+function openChess() {
+  chessWindow.classList.add('open');
+  chessWindow.setAttribute('aria-hidden', 'false');
+  if (!chessState) resetChessGame();
+}
+
+function closeChess() {
+  window.clearTimeout(chessMoveTimer);
+  chessMoveTimer = null;
+  chessThinking = false;
+  chessWindow.classList.remove('open', 'maximized');
+  chessWindow.setAttribute('aria-hidden', 'true');
+}
+
+chessDesktopIcon.addEventListener('click', openChess);
+chessCloseBtn.addEventListener('click', closeChess);
+chessMinBtn.addEventListener('click', closeChess);
+chessMaxBtn.addEventListener('click', () => {
+  chessWindow.classList.toggle('maximized');
+});
+chessNewGameBtn.addEventListener('click', resetChessGame);
+
+// =====================================================================
+//  WINDOWS COMMAND PROMPT — LOCAL WINDOWS 7-STYLE CONSOLE
+// =====================================================================
+const CMD_DEFAULT_PATH = 'C:\\Users\\User';
+const cmdFileSystem = {
+  'C:\\Users\\User': [
+    { name: '.', type: 'dir' },
+    { name: '..', type: 'dir' },
+    { name: 'Desktop', type: 'dir' },
+    { name: 'Documents', type: 'dir' },
+    { name: 'Downloads', type: 'dir' },
+    { name: 'Favorites', type: 'dir' },
+    { name: 'Music', type: 'dir' },
+    { name: 'Pictures', type: 'dir' },
+    { name: 'Videos', type: 'dir' },
+    { name: 'chess.exe', type: 'file', size: '61,440 KB' },
+    { name: 'readme.txt', type: 'file', size: '1 KB' }
+  ],
+  'C:\\Users\\User\\Desktop': [
+    { name: '.', type: 'dir' },
+    { name: '..', type: 'dir' },
+    { name: 'My Computer.lnk', type: 'file', size: '2 KB' },
+    { name: 'Chess.lnk', type: 'file', size: '1 KB' },
+    { name: 'Windows CMD.lnk', type: 'file', size: '1 KB' }
+  ],
+  'C:\\Users\\User\\Documents': [
+    { name: '.', type: 'dir' },
+    { name: '..', type: 'dir' },
+    { name: 'My Notes', type: 'dir' }
+  ],
+  'C:\\Windows': [
+    { name: '.', type: 'dir' },
+    { name: '..', type: 'dir' },
+    { name: 'System32', type: 'dir' },
+    { name: 'Temp', type: 'dir' },
+    { name: 'explorer.exe', type: 'file', size: '2,871 KB' },
+    { name: 'notepad.exe', type: 'file', size: '193 KB' }
+  ],
+  'C:\\Windows\\System32': [
+    { name: '.', type: 'dir' },
+    { name: '..', type: 'dir' },
+    { name: 'cmd.exe', type: 'file', size: '275 KB' },
+    { name: 'ipconfig.exe', type: 'file', size: '43 KB' },
+    { name: 'tasklist.exe', type: 'file', size: '51 KB' }
+  ]
+};
+let cmdCurrentPath = CMD_DEFAULT_PATH;
+let cmdHistory = [];
+let cmdHistoryIndex = 0;
+let cmdColor = '#f2f2f2';
+
+function cmdWrite(text = '') {
+  const line = document.createElement('div');
+  line.textContent = text;
+  cmdOutput.appendChild(line);
+  cmdOutput.scrollTop = cmdOutput.scrollHeight;
+}
+
+function cmdWriteBlock(text) {
+  String(text).split('\n').forEach(line => cmdWrite(line));
+}
+
+function cmdUpdatePrompt() {
+  cmdPrompt.textContent = cmdCurrentPath + '>';
+}
+
+function cmdNormalizePath(input) {
+  const value = input.trim().replace(/^["']|["']$/g, '');
+  if (!value) return cmdCurrentPath;
+  if (/^[a-z]:\\?$/i.test(value)) {
+    return value.replace(/\\?$/, '').toUpperCase() + '\\';
+  }
+  let candidate = /^([a-z]:\\)/i.test(value)
+    ? value
+    : (value.startsWith('\\') ? 'C:' + value : cmdCurrentPath.replace(/\\$/, '') + '\\' + value);
+  const parts = candidate.split('\\');
+  const normalized = [];
+  parts.forEach(part => {
+    if (!part || part === '.') return;
+    if (part === '..') {
+      if (normalized.length > 1) normalized.pop();
+      return;
+    }
+    normalized.push(part);
+  });
+  if (!normalized.length) return 'C:\\';
+  normalized[0] = normalized[0].toUpperCase();
+  return normalized.join('\\');
+}
+
+function cmdFindDirectory(path) {
+  const normalized = cmdNormalizePath(path);
+  if (normalized === 'C:\\' || cmdFileSystem[normalized]) return normalized;
+  const directoryExists = Object.keys(cmdFileSystem).some(key => key.toLowerCase() === normalized.toLowerCase());
+  if (!directoryExists) return null;
+  return Object.keys(cmdFileSystem).find(key => key.toLowerCase() === normalized.toLowerCase()) || null;
+}
+
+function cmdFindEntry(path) {
+  const normalized = cmdNormalizePath(path);
+  const slash = normalized.lastIndexOf('\\');
+  const parent = slash > 2 ? normalized.slice(0, slash) : normalized.slice(0, slash + 1);
+  const name = normalized.slice(slash + 1).toLowerCase();
+  const entries = cmdFileSystem[cmdFindDirectory(parent)] || [];
+  return entries.find(entry => entry.name.toLowerCase() === name) || null;
+}
+
+function cmdPrintDirectory(path = cmdCurrentPath) {
+  const directory = cmdFindDirectory(path);
+  if (!directory) {
+    cmdWrite('The system cannot find the path specified.');
+    return;
+  }
+  const entries = cmdFileSystem[directory] || [];
+  cmdWrite(' Volume in drive C has no label.');
+  cmdWrite(' Volume Serial Number is 7A3F-19C2');
+  cmdWrite('');
+  cmdWrite(' Directory of ' + directory);
+  cmdWrite('');
+  const dirs = entries.filter(entry => entry.type === 'dir');
+  const files = entries.filter(entry => entry.type === 'file');
+  dirs.forEach(entry => cmdWrite(
+    '08/08/2026  10:14 AM    <DIR>          ' + entry.name
+  ));
+  files.forEach(entry => cmdWrite(
+    '08/08/2026  10:14 AM            ' + String(entry.size).padStart(10, ' ') + ' ' + entry.name
+  ));
+  const fileBytes = files.reduce((sum, entry) => sum + parseInt(entry.size, 10) * 1024, 0);
+  cmdWrite(String(files.length).padStart(14, ' ') + ' File(s) ' +
+    String(fileBytes).padStart(18, ' ') + ' bytes');
+  cmdWrite(String(dirs.length).padStart(14, ' ') + ' Dir(s)  735,002,624 bytes free');
+}
+
+function cmdPrintHelp() {
+  cmdWriteBlock(
+`For more information on a specific command, type HELP command-name
+
+ASSOC          Displays or modifies file extension associations.
+CD             Displays the name of or changes the current directory.
+CLS            Clears the screen.
+COLOR          Sets the default console foreground and background colors.
+DATE           Displays or sets the date.
+DIR            Displays a list of files and subdirectories.
+ECHO           Displays messages, or turns command echoing on or off.
+EXIT           Quits the CMD.EXE program.
+HELP           Provides Help information for Windows commands.
+HOSTNAME       Displays the current host name.
+IPCONFIG       Displays IP configuration information.
+SYSTEMINFO     Displays detailed configuration information.
+TASKLIST       Displays all currently running tasks.
+TIME           Displays or sets the system time.
+TITLE          Sets the window title for the CMD.EXE session.
+VER            Displays the Windows version.`
+  );
+}
+
+function cmdRun(commandLine) {
+  const trimmed = commandLine.trim();
+  if (!trimmed) return;
+  const firstSpace = trimmed.search(/\s/);
+  const command = (firstSpace < 0 ? trimmed : trimmed.slice(0, firstSpace)).toLowerCase();
+  const args = firstSpace < 0 ? '' : trimmed.slice(firstSpace).trim();
+
+  if (command === 'help') {
+    cmdPrintHelp();
+    return;
+  }
+  if (command === 'cls' || command === 'clear') {
+    cmdOutput.replaceChildren();
+    return;
+  }
+  if (command === 'dir') {
+    cmdPrintDirectory(args || cmdCurrentPath);
+    return;
+  }
+  if (command === 'cd' || command === 'chdir') {
+    if (!args) {
+      cmdWrite(cmdCurrentPath);
+      return;
+    }
+    const destination = cmdFindDirectory(args);
+    if (!destination) {
+      cmdWrite('The system cannot find the path specified.');
+      return;
+    }
+    cmdCurrentPath = destination;
+    cmdUpdatePrompt();
+    return;
+  }
+  if (command === 'echo') {
+    if (!args) cmdWrite('ECHO is on.');
+    else if (args.toLowerCase() === 'off') cmdWrite('ECHO is off.');
+    else if (args.toLowerCase() === 'on') cmdWrite('ECHO is on.');
+    else cmdWrite(args);
+    return;
+  }
+  if (command === 'ver') {
+    cmdWrite('Microsoft Windows [Version 6.1.7601]');
+    return;
+  }
+  if (command === 'hostname') {
+    cmdWrite('RAISVOICE-PC');
+    return;
+  }
+  if (command === 'whoami') {
+    cmdWrite('raisvoice-pc\\user');
+    return;
+  }
+  if (command === 'date') {
+    cmdWrite('The current date is: 08/08/2026');
+    cmdWrite('Enter the new date: (mm-dd-yy)');
+    return;
+  }
+  if (command === 'time') {
+    cmdWrite('The current time is: ' + new Date().toLocaleTimeString([], { hour12: false }));
+    cmdWrite('Enter the new time:');
+    return;
+  }
+  if (command === 'ipconfig') {
+    cmdWriteBlock(
+`Windows IP Configuration
+
+Ethernet adapter Local Area Connection:
+
+   Connection-specific DNS Suffix  . :
+   IPv4 Address. . . . . . . . . . . : 192.168.1.7
+   Subnet Mask . . . . . . . . . . . : 255.255.255.0
+   Default Gateway . . . . . . . . . : 192.168.1.1`
+    );
+    return;
+  }
+  if (command === 'systeminfo') {
+    cmdWriteBlock(
+`Host Name:                 RAISVOICE-PC
+OS Name:                   Microsoft Windows 7 Ultimate
+OS Version:                6.1.7601 Service Pack 1 Build 7601
+System Manufacturer:       Raisvoice
+System Model:              Aero Desktop
+System Type:               x64-based PC
+Processor(s):              1 Processor(s) Installed.
+                           [01]: Intel(R) Core(TM) i7 CPU
+Total Physical Memory:     8,192 MB
+Available Physical Memory: 6,421 MB
+Windows Directory:         C:\\Windows`
+    );
+    return;
+  }
+  if (command === 'tasklist') {
+    cmdWriteBlock(
+`Image Name                     PID Session Name        Session#    Mem Usage
+========================= ======== ================ =========== ============
+System Idle Process              0 Services                   0         24 K
+System                           4 Services                   0      1,980 K
+explorer.exe                  1624 Console                    1     38,412 K
+svchost.exe                   1048 Services                   0     14,920 K
+audiodg.exe                   2380 Services                   0     12,564 K
+Raisvoice.exe                 3148 Console                    1    239,120 K
+chess.exe                    4020 Console                    1     61,440 K`
+    );
+    return;
+  }
+  if (command === 'color') {
+    const colorMap = {
+      '07': '#f2f2f2', '0a': '#55ff55', '0b': '#55aaff', '0c': '#ff5555',
+      '0e': '#ffff55', '0f': '#ffffff'
+    };
+    const colorCode = args.toLowerCase().replace(/^0/, '0');
+    if (!args) {
+      cmdWrite('COLOR [attr]');
+      cmdWrite('  attr        Specifies color attribute of console output.');
+      cmdWrite('  0 = Black    7 = Light Gray    A = Light Green');
+      return;
+    }
+    if (colorMap[colorCode]) {
+      cmdColor = colorMap[colorCode];
+      cmdConsole.style.color = cmdColor;
+    } else {
+      cmdWrite('Invalid attribute.');
+    }
+    return;
+  }
+  if (command === 'title') {
+    const title = args || 'C:\\Windows\\system32\\cmd.exe';
+    cmdTitle.textContent = title;
+    return;
+  }
+  if (command === 'type') {
+    const file = cmdFindEntry(args);
+    if (!file || file.type !== 'file') {
+      cmdWrite('The system cannot find the file specified.');
+    } else if (file.name.toLowerCase() === 'readme.txt') {
+      cmdWriteBlock('Welcome to Raisvoice Windows 7.\\nTry HELP to see available commands.');
+    } else {
+      cmdWrite('The file is a binary file and cannot be displayed.');
+    }
+    return;
+  }
+  if (command === 'exit') {
+    closeCmd();
+    return;
+  }
+  cmdWrite('\'' + trimmed + '\' is not recognized as an internal or external command,');
+  cmdWrite('operable program or batch file.');
+}
+
+function resetCmd() {
+  cmdCurrentPath = CMD_DEFAULT_PATH;
+  cmdHistory = [];
+  cmdHistoryIndex = 0;
+  cmdColor = '#f2f2f2';
+  cmdConsole.style.color = cmdColor;
+  cmdTitle.textContent = 'C:\\Windows\\system32\\cmd.exe';
+  cmdOutput.replaceChildren();
+  cmdUpdatePrompt();
+  cmdWrite('Microsoft Windows [Version 6.1.7601]');
+  cmdWrite('(c) 2009 Microsoft Corporation. All rights reserved.');
+  cmdWrite('');
+}
+
+function openCmd() {
+  cmdWindow.classList.add('open');
+  cmdWindow.setAttribute('aria-hidden', 'false');
+  if (!cmdOutput.childElementCount) resetCmd();
+  window.setTimeout(() => cmdInput.focus(), 0);
+}
+
+function closeCmd() {
+  cmdWindow.classList.remove('open', 'maximized');
+  cmdWindow.setAttribute('aria-hidden', 'true');
+}
+
+cmdDesktopIcon.addEventListener('click', openCmd);
+cmdCloseBtn.addEventListener('click', closeCmd);
+cmdMinBtn.addEventListener('click', closeCmd);
+cmdMaxBtn.addEventListener('click', () => {
+  cmdWindow.classList.toggle('maximized');
+  window.setTimeout(() => cmdInput.focus(), 0);
+});
+cmdConsole.addEventListener('click', () => cmdInput.focus());
+cmdForm.addEventListener('submit', event => {
+  event.preventDefault();
+  const commandLine = cmdInput.value;
+  cmdWrite(cmdPrompt.textContent + commandLine);
+  if (commandLine.trim()) {
+    cmdHistory.push(commandLine);
+    cmdHistoryIndex = cmdHistory.length;
+    cmdRun(commandLine);
+  }
+  cmdInput.value = '';
+});
+cmdInput.addEventListener('keydown', event => {
+  if (event.key === 'ArrowUp') {
+    event.preventDefault();
+    if (cmdHistoryIndex > 0) cmdHistoryIndex -= 1;
+    cmdInput.value = cmdHistory[cmdHistoryIndex] || '';
+    window.setTimeout(() => cmdInput.setSelectionRange(cmdInput.value.length, cmdInput.value.length), 0);
+  } else if (event.key === 'ArrowDown') {
+    event.preventDefault();
+    if (cmdHistoryIndex < cmdHistory.length) cmdHistoryIndex += 1;
+    cmdInput.value = cmdHistory[cmdHistoryIndex] || '';
+  } else if (event.key === 'Tab') {
+    event.preventDefault();
+    const prefix = cmdInput.value.trim().toLowerCase();
+    const options = ['help', 'dir', 'cd', 'cls', 'echo', 'ver', 'systeminfo',
+      'ipconfig', 'tasklist', 'whoami', 'hostname', 'date', 'time', 'color', 'title', 'type', 'exit'];
+    const match = options.find(option => option.startsWith(prefix));
+    if (match) cmdInput.value = match + ' ';
+  }
 });
 
 function minimizeWindow() {
