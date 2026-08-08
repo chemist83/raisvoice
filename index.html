@@ -567,6 +567,19 @@ input[type="range"]#ampSlider::-moz-range-thumb {
     height: calc(100% - 8px);
   }
 
+  #notepadWindow {
+    width: calc(100vw - 16px);
+    height: calc(100% - 52px);
+    min-height: 250px;
+  }
+
+  #notepadWindow.maximized {
+    top: 4px;
+    left: 4px;
+    width: calc(100% - 8px);
+    height: calc(100% - 8px);
+  }
+
   #aboutWindow {
     width: calc(100vw - 16px);
     height: calc(100% - 52px);
@@ -710,6 +723,9 @@ input[type="range"]#ampSlider::-moz-range-thumb {
   position: absolute;
   top: 16px; left: 18px;
   display: flex;
+  flex-wrap: wrap;
+  align-content: flex-start;
+  gap: 2px;
   z-index: 12;
 }
 
@@ -745,6 +761,474 @@ input[type="range"]#ampSlider::-moz-range-thumb {
   filter: drop-shadow(1px 2px 2px rgba(0,0,0,0.65));
 }
 
+/* ─── NOTEPAD WINDOW ────────────────────────────── */
+#notepadWindow {
+  position: absolute;
+  top: 50%; left: 50%;
+  width: min(640px, calc(100vw - 36px));
+  height: min(460px, calc(100% - 70px));
+  min-height: 280px;
+  display: none;
+  flex-direction: column;
+  transform: translate(-50%, -50%);
+  border: 1px solid rgba(120,180,255,0.65);
+  border-radius: 8px 8px 3px 3px;
+  overflow: hidden;
+  background: #f3f7fb;
+  box-shadow: 0 10px 35px rgba(0,20,70,0.8), inset 0 1px 0 rgba(255,255,255,0.4);
+  z-index: 60;
+}
+
+#notepadWindow.open { display: flex; }
+#notepadWindow.maximized {
+  top: 6px;
+  left: 6px;
+  width: calc(100% - 12px);
+  height: calc(100% - 12px);
+  transform: none;
+}
+
+.notepad-menu-bar {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  min-height: 27px;
+  padding: 3px 9px;
+  border-bottom: 1px solid #c2cedb;
+  background: linear-gradient(180deg, #ffffff, #e5edf5);
+  color: #1e2e40;
+  font-size: 11px;
+}
+
+.notepad-menu-bar span {
+  cursor: default;
+}
+
+.notepad-editor {
+  flex: 1;
+  min-height: 0;
+  width: 100%;
+  resize: none;
+  padding: 12px;
+  border: 0;
+  outline: none;
+  background: #fff;
+  color: #111;
+  font-family: Consolas, "Courier New", monospace;
+  font-size: 13px;
+  line-height: 1.5;
+  overflow: auto;
+}
+
+.notepad-footer {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 38px;
+  padding: 5px 8px;
+  border-top: 1px solid #b5c8dc;
+  background: linear-gradient(180deg, #f5faff, #dceaf7);
+}
+
+.notepad-file-name {
+  flex: 1;
+  min-width: 0;
+  height: 26px;
+  padding: 3px 7px;
+  border: 1px solid #8faac5;
+  border-radius: 2px;
+  outline: none;
+  background: #fff;
+  color: #234d75;
+  font-family: var(--font);
+  font-size: 11px;
+}
+
+.notepad-file-name:focus {
+  border-color: #4f8dc6;
+  box-shadow: 0 0 3px rgba(65,140,215,0.45);
+}
+
+.notepad-save-btn {
+  height: 26px;
+  padding: 0 14px;
+  border: 1px solid #6b93b7;
+  border-radius: 3px;
+  background: linear-gradient(180deg, #ffffff, #c6dbed);
+  color: #234d75;
+  font-family: var(--font);
+  font-size: 11px;
+  font-weight: 600;
+  cursor: pointer;
+  box-shadow: 0 1px 0 rgba(255,255,255,0.8) inset;
+}
+
+.notepad-save-btn:hover { filter: brightness(1.08); }
+.notepad-save-btn:active { filter: brightness(0.92); }
+
+/* Windows 7-style text document icons created by Save. */
+.saved-note-icon svg {
+  width: 48px;
+  height: 42px;
+}
+
+/* ─── GOOGLE CHROME WINDOW ──────────────────────── */
+#chromeWindow {
+  position: absolute;
+  top: 50%; left: 50%;
+  width: min(900px, calc(100vw - 30px));
+  height: min(600px, calc(100% - 54px));
+  min-height: 300px;
+  display: none;
+  flex-direction: column;
+  transform: translate(-50%, -50%);
+  overflow: hidden;
+  border: 1px solid #3e4b5c;
+  border-radius: 8px 8px 3px 3px;
+  background: #f1f3f4;
+  box-shadow: 0 12px 38px rgba(0,15,50,0.82), inset 0 1px 0 rgba(255,255,255,0.35);
+  z-index: 70;
+}
+
+#chromeWindow.open { display: flex; }
+#chromeWindow.maximized {
+  top: 4px;
+  left: 4px;
+  width: calc(100% - 8px);
+  height: calc(100% - 8px);
+  transform: none;
+}
+
+.chrome-title-bar {
+  display: flex;
+  align-items: flex-end;
+  min-height: 35px;
+  padding: 4px 5px 0;
+  background: linear-gradient(180deg, #dfe5ec, #c7d0db);
+}
+
+.chrome-app-icon {
+  width: 18px;
+  height: 18px;
+  margin: 0 5px 8px 3px;
+  flex-shrink: 0;
+}
+
+.chrome-tabs {
+  display: flex;
+  align-items: flex-end;
+  gap: 2px;
+  min-width: 0;
+  flex: 1;
+  overflow: hidden;
+}
+
+.chrome-tab {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  width: 190px;
+  min-width: 90px;
+  max-width: 220px;
+  height: 30px;
+  padding: 0 8px 0 11px;
+  border: 1px solid #aab7c5;
+  border-bottom: none;
+  border-radius: 8px 8px 0 0;
+  background: linear-gradient(180deg, #d0d9e3, #bbc6d2);
+  color: #314255;
+  font-family: var(--font);
+  font-size: 11px;
+  cursor: pointer;
+}
+
+.chrome-tab.active {
+  border-color: #aab7c5;
+  background: #f1f3f4;
+  color: #172333;
+}
+
+.chrome-tab-title {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.chrome-tab-close {
+  width: 17px;
+  height: 17px;
+  flex-shrink: 0;
+  padding: 0;
+  border: 0;
+  border-radius: 50%;
+  background: transparent;
+  color: #4d5b6a;
+  cursor: pointer;
+  font-size: 14px;
+  line-height: 17px;
+}
+
+.chrome-tab-close:hover {
+  background: rgba(80,100,120,0.2);
+}
+
+.chrome-new-tab {
+  width: 27px;
+  height: 27px;
+  margin: 0 0 2px 2px;
+  flex-shrink: 0;
+  border: 0;
+  border-radius: 50%;
+  background: transparent;
+  color: #405265;
+  font-size: 19px;
+  line-height: 25px;
+  cursor: pointer;
+}
+
+.chrome-new-tab:hover { background: rgba(90,110,130,0.18); }
+
+.chrome-window-buttons {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  margin: 0 0 5px 5px;
+}
+
+.chrome-window-button {
+  width: 25px;
+  height: 22px;
+  padding: 0;
+  border: 1px solid transparent;
+  border-radius: 3px;
+  background: transparent;
+  color: #344454;
+  cursor: pointer;
+  font-size: 12px;
+}
+
+.chrome-window-button:hover { background: rgba(255,255,255,0.55); border-color: #a7b5c4; }
+.chrome-window-button.close:hover { background: #d9534f; color: #fff; border-color: #b74440; }
+
+.chrome-toolbar {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  min-height: 43px;
+  padding: 6px 8px;
+  border-top: 1px solid #b3bfcc;
+  border-bottom: 1px solid #c7d0d9;
+  background: #f1f3f4;
+}
+
+.chrome-nav-button,
+.chrome-home-button {
+  width: 29px;
+  height: 29px;
+  flex: 0 0 29px;
+  padding: 0;
+  border: 0;
+  border-radius: 50%;
+  background: transparent;
+  color: #465564;
+  cursor: pointer;
+  font-size: 18px;
+  line-height: 29px;
+  text-align: center;
+}
+
+.chrome-nav-button:hover,
+.chrome-home-button:hover {
+  background: #dce2e8;
+}
+
+.chrome-nav-button:disabled {
+  color: #9ca8b4;
+  cursor: default;
+}
+
+.chrome-address-form {
+  display: flex;
+  align-items: center;
+  flex: 1;
+  min-width: 0;
+  height: 31px;
+  padding: 0 9px;
+  border: 1px solid #c0c8d0;
+  border-radius: 16px;
+  background: #fff;
+  box-shadow: inset 0 1px 2px rgba(40,55,70,0.08);
+}
+
+.chrome-address-form:focus-within {
+  border-color: #4d91e8;
+  box-shadow: 0 0 0 1px rgba(77,145,232,0.35);
+}
+
+.chrome-address-icon {
+  margin-right: 6px;
+  color: #607284;
+  font-size: 12px;
+}
+
+#chromeAddress {
+  width: 100%;
+  min-width: 0;
+  border: 0;
+  outline: 0;
+  background: transparent;
+  color: #243241;
+  font-family: var(--font);
+  font-size: 12px;
+}
+
+.chrome-menu-button {
+  width: 29px;
+  height: 29px;
+  padding: 0;
+  border: 0;
+  border-radius: 50%;
+  background: transparent;
+  color: #465564;
+  cursor: pointer;
+  font-size: 18px;
+}
+
+.chrome-menu-button:hover { background: #dce2e8; }
+
+.chrome-content {
+  position: relative;
+  flex: 1;
+  min-height: 0;
+  background: #fff;
+}
+
+#chromeFrame {
+  display: block;
+  width: 100%;
+  height: 100%;
+  border: 0;
+  background: #fff;
+}
+
+#chromeHome {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: auto;
+  background: linear-gradient(145deg, #f8fbff, #e8f0f8);
+}
+
+.chrome-home-card {
+  width: min(560px, calc(100% - 32px));
+  padding: 28px 24px;
+  text-align: center;
+}
+
+.chrome-home-logo {
+  width: 76px;
+  height: 76px;
+  margin: 0 auto 14px;
+}
+
+.chrome-home-title {
+  color: #30465c;
+  font-size: 23px;
+  font-weight: 600;
+}
+
+.chrome-home-subtitle {
+  margin: 7px 0 18px;
+  color: #718296;
+  font-size: 12px;
+}
+
+.chrome-home-search {
+  display: flex;
+  gap: 7px;
+  padding: 5px 6px 5px 12px;
+  border: 1px solid #bdc9d5;
+  border-radius: 22px;
+  background: #fff;
+  box-shadow: 0 2px 9px rgba(50,80,110,0.15);
+}
+
+#chromeHomeSearchInput {
+  flex: 1;
+  min-width: 0;
+  border: 0;
+  outline: 0;
+  color: #26394d;
+  font-family: var(--font);
+  font-size: 12px;
+}
+
+#chromeHomeSearchButton,
+#chromeExternalButton {
+  padding: 6px 12px;
+  border: 1px solid #7ca2c4;
+  border-radius: 15px;
+  background: linear-gradient(180deg, #fff, #d1e3f2);
+  color: #28567e;
+  font-family: var(--font);
+  font-size: 11px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+#chromeHomeSearchButton:hover,
+#chromeExternalButton:hover { filter: brightness(1.08); }
+
+.chrome-frame-fallback {
+  position: absolute;
+  right: 12px;
+  bottom: 12px;
+  display: none;
+  align-items: center;
+  gap: 7px;
+  padding: 6px 8px;
+  border: 1px solid #b8c8d8;
+  border-radius: 4px;
+  background: rgba(255,255,255,0.94);
+  color: #5a6f83;
+  font-size: 10px;
+}
+
+@media (max-width: 700px) {
+  #chromeWindow {
+    width: calc(100vw - 12px);
+    height: calc(100% - 46px);
+    min-height: 250px;
+  }
+
+  #chromeWindow.maximized {
+    top: 3px;
+    left: 3px;
+    width: calc(100% - 6px);
+    height: calc(100% - 6px);
+  }
+
+  .chrome-tab {
+    width: 145px;
+  }
+
+  .chrome-title-bar {
+    padding-left: 2px;
+  }
+
+  .chrome-app-icon {
+    display: none;
+  }
+
+  .chrome-window-buttons {
+    margin-left: 2px;
+  }
+}
+
 /* ─── MY COMPUTER WINDOW ────────────────────────── */
 #myComputerWindow {
   position: absolute;
@@ -770,6 +1254,114 @@ input[type="range"]#ampSlider::-moz-range-thumb {
   width: calc(100% - 12px);
   height: calc(100% - 12px);
   transform: none;
+}
+
+.my-computer-content {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.storage-panel {
+  flex: 0 0 auto;
+  padding: 9px 11px 10px;
+  border-bottom: 1px solid #a8bfd8;
+  background: linear-gradient(180deg, #f8fbff, #d9e8f7);
+  color: #34516f;
+}
+
+.storage-panel-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  margin-bottom: 6px;
+  font-size: 11px;
+  font-weight: 700;
+}
+
+#storageUsageText {
+  color: #58718a;
+  font-size: 10px;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.storage-meter {
+  height: 15px;
+  overflow: hidden;
+  border: 1px solid #7694b1;
+  border-radius: 3px;
+  background: #e9f1f8;
+  box-shadow: inset 0 1px 2px rgba(30,60,90,0.2);
+}
+
+#storageMeterFill {
+  width: 0%;
+  height: 100%;
+  background: linear-gradient(180deg, #69b7f1, #2369b6);
+  transition: width .2s ease, background .2s ease;
+}
+
+#storageMeterFill.warning {
+  background: linear-gradient(180deg, #f2c451, #c57b19);
+}
+
+#storageMeterFill.full {
+  background: linear-gradient(180deg, #ef7770, #b72d2a);
+}
+
+.storage-details {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 5px;
+  margin-top: 7px;
+}
+
+.storage-detail {
+  min-width: 0;
+  padding: 4px 5px;
+  border: 1px solid rgba(126,157,185,0.65);
+  border-radius: 3px;
+  background: rgba(255,255,255,0.5);
+  text-align: center;
+}
+
+.storage-detail-label {
+  display: block;
+  overflow: hidden;
+  color: #6b8196;
+  font-size: 8px;
+  font-weight: 700;
+  text-overflow: ellipsis;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+.storage-detail-value {
+  display: block;
+  margin-top: 2px;
+  color: #234d75;
+  font-size: 11px;
+  font-weight: 700;
+}
+
+.my-computer-files {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+#audioFileList {
+  flex: 1;
+}
+
+@media (max-width: 700px) {
+  .storage-details {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
 }
 
 /* ─── ABOUT WINDOW ──────────────────────────────── */
@@ -1049,6 +1641,26 @@ input[type="range"]#ampSlider::-moz-range-thumb {
         </svg>
         <span>My Computer</span>
       </button>
+      <button class="desktop-icon" id="notepadIcon" type="button" title="Notepad">
+        <svg viewBox="0 0 64 54" aria-hidden="true">
+          <path d="M17 3h30l10 10v38H17z" fill="#f7fbff" stroke="#164b8f" stroke-width="2"/>
+          <path d="M47 3v12h10" fill="#c8e4fb" stroke="#164b8f" stroke-width="2"/>
+          <path d="M25 24h24M25 31h24M25 38h18" stroke="#4d80b3" stroke-width="2" stroke-linecap="round"/>
+          <path d="M8 12h7v34H8z" fill="#6dca6b" stroke="#287b35" stroke-width="1.5"/>
+          <path d="M10 18h3M10 25h3M10 32h3M10 39h3" stroke="#eaffea" stroke-width="1.4"/>
+        </svg>
+        <span>Notepad</span>
+      </button>
+      <button class="desktop-icon" id="chromeIcon" type="button" title="Google Chrome">
+        <svg viewBox="0 0 64 64" aria-hidden="true">
+          <path d="M32 4a28 28 0 0 1 24.25 14H32a14 14 0 0 0-12.1 7L12.8 14A28 28 0 0 1 32 4z" fill="#e84c4c"/>
+          <path d="M56.25 18A28 28 0 0 1 35.5 59.4L24 39.5A14 14 0 0 0 32 18z" fill="#f2c94c"/>
+          <path d="M35.5 59.4A28 28 0 0 1 4 32a27.8 27.8 0 0 1 8.8-20l11.5 20A14 14 0 0 0 24 39.5z" fill="#43a866"/>
+          <circle cx="32" cy="32" r="11.5" fill="#52a8e8" stroke="#fff" stroke-width="2"/>
+          <circle cx="32" cy="32" r="7.5" fill="#438dd1"/>
+        </svg>
+        <span>Google Chrome</span>
+      </button>
     </div>
   </div>
 
@@ -1068,15 +1680,133 @@ input[type="range"]#ampSlider::-moz-range-thumb {
         <button class="win-btn win-btn-close" id="myComputerCloseBtn" type="button" title="Close">✕</button>
       </div>
     </div>
-    <div class="system-window-body">
-      <div class="system-toolbar">
-        <svg class="system-toolbar-icon" viewBox="0 0 32 28" aria-hidden="true">
-          <path d="M2 7h11l3 3h14v15H2z" fill="#f8cf55" stroke="#ad7c18" stroke-width="1.5"/>
-          <path d="M2 7h11l3 3H2z" fill="#ffe68b" stroke="#ad7c18" stroke-width="1.5"/>
-        </svg>
-        <span id="audioFileSummary">Audio Files</span>
+    <div class="system-window-body my-computer-content">
+      <div class="storage-panel">
+        <div class="storage-panel-heading">
+          <span>Local Disk (C:) — Storage</span>
+          <span id="storageUsageText">289 MB used of 1 GB</span>
+        </div>
+        <div class="storage-meter" aria-label="Storage usage">
+          <div id="storageMeterFill"></div>
+        </div>
+        <div class="storage-details">
+          <div class="storage-detail">
+            <span class="storage-detail-label">Free space</span>
+            <span class="storage-detail-value" id="storageFreeValue">735 MB</span>
+          </div>
+          <div class="storage-detail">
+            <span class="storage-detail-label">Chrome</span>
+            <span class="storage-detail-value">50 MB</span>
+          </div>
+          <div class="storage-detail">
+            <span class="storage-detail-label">Sound Simulator</span>
+            <span class="storage-detail-value">239 MB</span>
+          </div>
+          <div class="storage-detail">
+            <span class="storage-detail-label">Text files</span>
+            <span class="storage-detail-value" id="storageNotesValue">0 MB</span>
+          </div>
+          <div class="storage-detail">
+            <span class="storage-detail-label">Audio files</span>
+            <span class="storage-detail-value" id="storageAudioValue">0 MB</span>
+          </div>
+        </div>
       </div>
-      <div id="audioFileList"></div>
+      <div class="my-computer-files">
+        <div class="system-toolbar">
+          <svg class="system-toolbar-icon" viewBox="0 0 32 28" aria-hidden="true">
+            <path d="M2 7h11l3 3h14v15H2z" fill="#f8cf55" stroke="#ad7c18" stroke-width="1.5"/>
+            <path d="M2 7h11l3 3H2z" fill="#ffe68b" stroke="#ad7c18" stroke-width="1.5"/>
+          </svg>
+          <span id="audioFileSummary">Audio Files</span>
+        </div>
+        <div id="audioFileList"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── NOTEPAD WINDOW ── -->
+  <section id="notepadWindow" role="dialog" aria-labelledby="notepadTitle" aria-hidden="true">
+    <div class="system-title-bar">
+      <svg class="system-title-icon" viewBox="0 0 64 54" aria-hidden="true">
+        <path d="M17 3h30l10 10v38H17z" fill="#f7fbff" stroke="#164b8f" stroke-width="2"/>
+        <path d="M47 3v12h10" fill="#c8e4fb" stroke="#164b8f" stroke-width="2"/>
+        <path d="M25 24h24M25 31h24M25 38h18" stroke="#4d80b3" stroke-width="2" stroke-linecap="round"/>
+        <path d="M8 12h7v34H8z" fill="#6dca6b" stroke="#287b35" stroke-width="1.5"/>
+      </svg>
+      <div class="win-title" id="notepadTitle">Untitled - Notepad</div>
+      <div class="win-buttons">
+        <button class="win-btn win-btn-min" id="notepadMinBtn" type="button" title="Minimize">─</button>
+        <button class="win-btn win-btn-max" id="notepadMaxBtn" type="button" title="Maximize">□</button>
+        <button class="win-btn win-btn-close" id="notepadCloseBtn" type="button" title="Close">✕</button>
+      </div>
+    </div>
+    <div class="notepad-menu-bar" aria-label="Notepad menu">
+      <span>File</span>
+      <span>Edit</span>
+      <span>Format</span>
+      <span>View</span>
+      <span>Help</span>
+    </div>
+    <textarea id="notepadEditor" class="notepad-editor" spellcheck="false" placeholder="Type your note here..."></textarea>
+    <div class="notepad-footer">
+      <input id="notepadFileName" class="notepad-file-name" type="text" value="New Text Document.txt" aria-label="Text file name">
+      <button id="notepadSaveBtn" class="notepad-save-btn" type="button">Save</button>
+    </div>
+  </section>
+
+  <!-- ── GOOGLE CHROME WINDOW ── -->
+  <section id="chromeWindow" role="dialog" aria-labelledby="chromeWindowTitle" aria-hidden="true">
+    <div class="chrome-title-bar">
+      <svg class="chrome-app-icon" viewBox="0 0 64 64" aria-hidden="true">
+        <path d="M32 4a28 28 0 0 1 24.25 14H32a14 14 0 0 0-12.1 7L12.8 14A28 28 0 0 1 32 4z" fill="#e84c4c"/>
+        <path d="M56.25 18A28 28 0 0 1 35.5 59.4L24 39.5A14 14 0 0 0 32 18z" fill="#f2c94c"/>
+        <path d="M35.5 59.4A28 28 0 0 1 4 32a27.8 27.8 0 0 1 8.8-20l11.5 20A14 14 0 0 0 24 39.5z" fill="#43a866"/>
+        <circle cx="32" cy="32" r="11.5" fill="#52a8e8" stroke="#fff" stroke-width="2"/>
+        <circle cx="32" cy="32" r="7.5" fill="#438dd1"/>
+      </svg>
+      <div class="chrome-tabs" id="chromeTabs"></div>
+      <button class="chrome-new-tab" id="chromeNewTabBtn" type="button" title="New tab">+</button>
+      <div class="chrome-window-buttons">
+        <button class="chrome-window-button" id="chromeMinBtn" type="button" title="Minimize">─</button>
+        <button class="chrome-window-button" id="chromeMaxBtn" type="button" title="Maximize">□</button>
+        <button class="chrome-window-button close" id="chromeCloseBtn" type="button" title="Close">✕</button>
+      </div>
+    </div>
+    <div class="chrome-toolbar">
+      <button class="chrome-nav-button" id="chromeBackBtn" type="button" title="Back">‹</button>
+      <button class="chrome-nav-button" id="chromeForwardBtn" type="button" title="Forward">›</button>
+      <button class="chrome-nav-button" id="chromeReloadBtn" type="button" title="Reload">↻</button>
+      <button class="chrome-home-button" id="chromeHomeBtn" type="button" title="Home">⌂</button>
+      <form class="chrome-address-form" id="chromeAddressForm">
+        <span class="chrome-address-icon" aria-hidden="true">ⓘ</span>
+        <input id="chromeAddress" type="text" autocomplete="off" spellcheck="false" aria-label="Address and search bar" placeholder="Search Google or type a URL">
+      </form>
+      <button class="chrome-menu-button" id="chromeMenuBtn" type="button" title="Customize and control Google Chrome">⋮</button>
+    </div>
+    <div class="chrome-content">
+      <div id="chromeHome">
+        <div class="chrome-home-card">
+          <svg class="chrome-home-logo" viewBox="0 0 64 64" aria-hidden="true">
+            <path d="M32 4a28 28 0 0 1 24.25 14H32a14 14 0 0 0-12.1 7L12.8 14A28 28 0 0 1 32 4z" fill="#e84c4c"/>
+            <path d="M56.25 18A28 28 0 0 1 35.5 59.4L24 39.5A14 14 0 0 0 32 18z" fill="#f2c94c"/>
+            <path d="M35.5 59.4A28 28 0 0 1 4 32a27.8 27.8 0 0 1 8.8-20l11.5 20A14 14 0 0 0 24 39.5z" fill="#43a866"/>
+            <circle cx="32" cy="32" r="11.5" fill="#52a8e8" stroke="#fff" stroke-width="2"/>
+            <circle cx="32" cy="32" r="7.5" fill="#438dd1"/>
+          </svg>
+          <div class="chrome-home-title" id="chromeWindowTitle">Google Chrome</div>
+          <div class="chrome-home-subtitle">Search the web or type a web address to begin.</div>
+          <form class="chrome-home-search" id="chromeHomeSearchForm">
+            <input id="chromeHomeSearchInput" type="text" autocomplete="off" placeholder="Search Google or type a URL" aria-label="Search Google">
+            <button id="chromeHomeSearchButton" type="submit">Search</button>
+          </form>
+        </div>
+      </div>
+      <iframe id="chromeFrame" title="Google Chrome web page" hidden></iframe>
+      <div class="chrome-frame-fallback" id="chromeFrameFallback">
+        <span>This site may block the virtual browser.</span>
+        <button id="chromeExternalButton" type="button">Open in browser</button>
+      </div>
     </div>
   </section>
 
@@ -1339,7 +2069,7 @@ input[type="range"]#ampSlider::-moz-range-thumb {
 
 <!-- Opening sound: replace the source below with your own audio file or URL. -->
 <audio id="openingSound" preload="auto" playsinline>
-  <source src="Microsoft Windows 7 Startup Sound (animated).mp3" type="audio/mpeg">
+  <source src="PASTE_OPENING_SOUND_SOURCE_HERE" type="audio/mpeg">
 </audio>
 
 <script>
@@ -1806,6 +2536,40 @@ const myComputerMinBtn = document.getElementById('myComputerMinBtn');
 const myComputerMaxBtn = document.getElementById('myComputerMaxBtn');
 const audioFileList = document.getElementById('audioFileList');
 const audioFileSummary = document.getElementById('audioFileSummary');
+const storageUsageText = document.getElementById('storageUsageText');
+const storageMeterFill = document.getElementById('storageMeterFill');
+const storageFreeValue = document.getElementById('storageFreeValue');
+const storageNotesValue = document.getElementById('storageNotesValue');
+const storageAudioValue = document.getElementById('storageAudioValue');
+const notepadIcon = document.getElementById('notepadIcon');
+const notepadWindow = document.getElementById('notepadWindow');
+const notepadEditor = document.getElementById('notepadEditor');
+const notepadFileName = document.getElementById('notepadFileName');
+const notepadSaveBtn = document.getElementById('notepadSaveBtn');
+const notepadTitle = document.getElementById('notepadTitle');
+const notepadCloseBtn = document.getElementById('notepadCloseBtn');
+const notepadMinBtn = document.getElementById('notepadMinBtn');
+const notepadMaxBtn = document.getElementById('notepadMaxBtn');
+const chromeIcon = document.getElementById('chromeIcon');
+const chromeWindow = document.getElementById('chromeWindow');
+const chromeTabs = document.getElementById('chromeTabs');
+const chromeFrame = document.getElementById('chromeFrame');
+const chromeHome = document.getElementById('chromeHome');
+const chromeAddress = document.getElementById('chromeAddress');
+const chromeAddressForm = document.getElementById('chromeAddressForm');
+const chromeHomeSearchForm = document.getElementById('chromeHomeSearchForm');
+const chromeHomeSearchInput = document.getElementById('chromeHomeSearchInput');
+const chromeFrameFallback = document.getElementById('chromeFrameFallback');
+const chromeExternalButton = document.getElementById('chromeExternalButton');
+const chromeBackBtn = document.getElementById('chromeBackBtn');
+const chromeForwardBtn = document.getElementById('chromeForwardBtn');
+const chromeReloadBtn = document.getElementById('chromeReloadBtn');
+const chromeHomeBtn = document.getElementById('chromeHomeBtn');
+const chromeNewTabBtn = document.getElementById('chromeNewTabBtn');
+const chromeMinBtn = document.getElementById('chromeMinBtn');
+const chromeMaxBtn = document.getElementById('chromeMaxBtn');
+const chromeCloseBtn = document.getElementById('chromeCloseBtn');
+const chromeMenuBtn = document.getElementById('chromeMenuBtn');
 const aboutBtn = document.getElementById('aboutBtn');
 const aboutWindow = document.getElementById('aboutWindow');
 const aboutCloseBtn = document.getElementById('aboutCloseBtn');
@@ -1816,6 +2580,10 @@ const aboutMaxBtn = document.getElementById('aboutMaxBtn');
 //  MY COMPUTER — LOCAL AUDIO LIBRARY
 // =====================================================================
 const AUDIO_STORAGE_KEY = 'raisvoice.audioFiles';
+const STORAGE_TOTAL_MB = 1024;
+const CHROME_STORAGE_MB = 50;
+const SOUND_SIMULATOR_STORAGE_MB = 239;
+const NOTE_STORAGE_MB = 10;
 
 function getStoredAudioFiles() {
   try {
@@ -1834,6 +2602,35 @@ function setStoredAudioFiles(files) {
   } catch (_) {
     return false;
   }
+}
+
+function getStoredAudioSizeMb(files = getStoredAudioFiles()) {
+  return files.reduce((total, file) => {
+    const bytes = Number(file.size);
+    return total + (Number.isFinite(bytes) && bytes > 0 ? bytes / (1024 * 1024) : 0);
+  }, 0);
+}
+
+function formatStorageMb(mb) {
+  if (mb >= 100) return `${Math.round(mb)} MB`;
+  return `${mb.toFixed(1)} MB`;
+}
+
+function updateStorageUsage() {
+  const audioMb = getStoredAudioSizeMb();
+  const notes = getStoredNotes();
+  const notesMb = notes.length * NOTE_STORAGE_MB;
+  const usedMb = CHROME_STORAGE_MB + SOUND_SIMULATOR_STORAGE_MB + notesMb + audioMb;
+  const freeMb = Math.max(0, STORAGE_TOTAL_MB - usedMb);
+  const usedPercent = Math.min(100, (usedMb / STORAGE_TOTAL_MB) * 100);
+
+  storageUsageText.textContent = `${formatStorageMb(usedMb)} used of 1 GB`;
+  storageFreeValue.textContent = formatStorageMb(freeMb);
+  storageNotesValue.textContent = `${notesMb} MB`;
+  storageAudioValue.textContent = formatStorageMb(audioMb);
+  storageMeterFill.style.width = `${usedPercent}%`;
+  storageMeterFill.classList.toggle('warning', usedPercent >= 70 && usedPercent < 90);
+  storageMeterFill.classList.toggle('full', usedPercent >= 90);
 }
 
 function fileToDataUrl(file) {
@@ -1869,6 +2666,7 @@ function formatFileSize(bytes) {
 
 function renderAudioFileList() {
   const files = getStoredAudioFiles();
+  updateStorageUsage();
   audioFileList.replaceChildren();
   audioFileSummary.textContent = files.length
     ? `Audio Files (${files.length})`
@@ -1923,6 +2721,7 @@ function renderAudioFileList() {
 }
 
 function openMyComputer() {
+  updateStorageUsage();
   renderAudioFileList();
   myComputerWindow.classList.add('open');
   myComputerWindow.setAttribute('aria-hidden', 'false');
@@ -1938,6 +2737,358 @@ myComputerCloseBtn.addEventListener('click', closeMyComputer);
 myComputerMinBtn.addEventListener('click', closeMyComputer);
 myComputerMaxBtn.addEventListener('click', () => {
   myComputerWindow.classList.toggle('maximized');
+});
+
+// =====================================================================
+//  NOTEPAD — LOCAL TEXT FILES
+// =====================================================================
+const NOTES_STORAGE_KEY = 'raisvoice.textNotes';
+let activeNoteId = null;
+
+function getStoredNotes() {
+  try {
+    const raw = localStorage.getItem(NOTES_STORAGE_KEY);
+    const notes = raw ? JSON.parse(raw) : [];
+    return Array.isArray(notes) ? notes : [];
+  } catch (_) {
+    return [];
+  }
+}
+
+function setStoredNotes(notes) {
+  try {
+    localStorage.setItem(NOTES_STORAGE_KEY, JSON.stringify(notes));
+    return true;
+  } catch (_) {
+    return false;
+  }
+}
+
+function makeNoteId() {
+  if (window.crypto && typeof window.crypto.randomUUID === 'function') {
+    return window.crypto.randomUUID();
+  }
+  return 'note-' + Date.now() + '-' + Math.random().toString(36).slice(2);
+}
+
+function normalizeNoteName(name) {
+  const cleaned = name
+    .replace(/[\\/:*?"<>|]/g, '')
+    .replace(/\s+/g, ' ')
+    .trim();
+  if (!cleaned) return 'New Text Document.txt';
+  return cleaned.toLowerCase().endsWith('.txt') ? cleaned : cleaned + '.txt';
+}
+
+function renderSavedNoteIcons() {
+  document.querySelectorAll('.saved-note-icon').forEach(icon => icon.remove());
+
+  getStoredNotes().forEach(note => {
+    const noteButton = document.createElement('button');
+    noteButton.className = 'desktop-icon saved-note-icon';
+    noteButton.type = 'button';
+    noteButton.title = note.name;
+    noteButton.dataset.noteId = note.id;
+    noteButton.innerHTML = `
+      <svg viewBox="0 0 64 54" aria-hidden="true">
+        <path d="M17 3h30l10 10v38H17z" fill="#f7fbff" stroke="#164b8f" stroke-width="2"/>
+        <path d="M47 3v12h10" fill="#c8e4fb" stroke="#164b8f" stroke-width="2"/>
+        <path d="M25 24h24M25 31h24M25 38h18" stroke="#4d80b3" stroke-width="2" stroke-linecap="round"/>
+        <path d="M8 12h7v34H8z" fill="#6dca6b" stroke="#287b35" stroke-width="1.5"/>
+      </svg>
+    `;
+    const label = document.createElement('span');
+    label.textContent = note.name;
+    noteButton.appendChild(label);
+    noteButton.addEventListener('click', () => openNote(note.id));
+    document.getElementById('desktopIcons').appendChild(noteButton);
+  });
+}
+
+function openNotepad(note = null) {
+  activeNoteId = note ? note.id : null;
+  notepadEditor.value = note ? note.content : '';
+  notepadFileName.value = note ? note.name : 'New Text Document.txt';
+  notepadTitle.textContent = note ? `${note.name} - Notepad` : 'Untitled - Notepad';
+  notepadWindow.classList.add('open');
+  notepadWindow.setAttribute('aria-hidden', 'false');
+  window.setTimeout(() => notepadEditor.focus(), 0);
+}
+
+function openNote(noteId) {
+  const note = getStoredNotes().find(savedNote => savedNote.id === noteId);
+  if (note) openNotepad(note);
+}
+
+function closeNotepad() {
+  notepadWindow.classList.remove('open', 'maximized');
+  notepadWindow.setAttribute('aria-hidden', 'true');
+}
+
+function saveCurrentNote() {
+  const name = normalizeNoteName(notepadFileName.value);
+  const notes = getStoredNotes();
+  const existingByName = notes.find(note => note.name.toLowerCase() === name.toLowerCase());
+  const noteId = activeNoteId || (existingByName && existingByName.id) || makeNoteId();
+  const savedNote = {
+    id: noteId,
+    name,
+    content: notepadEditor.value,
+    updatedAt: new Date().toISOString()
+  };
+  const withoutCurrent = notes.filter(note => note.id !== noteId);
+
+  if (!setStoredNotes([savedNote, ...withoutCurrent])) {
+    return;
+  }
+
+  activeNoteId = noteId;
+  notepadFileName.value = name;
+  notepadTitle.textContent = `${name} - Notepad`;
+  renderSavedNoteIcons();
+  updateStorageUsage();
+}
+
+notepadIcon.addEventListener('click', () => openNotepad());
+notepadSaveBtn.addEventListener('click', saveCurrentNote);
+notepadCloseBtn.addEventListener('click', closeNotepad);
+notepadMinBtn.addEventListener('click', closeNotepad);
+notepadMaxBtn.addEventListener('click', () => {
+  notepadWindow.classList.toggle('maximized');
+});
+renderSavedNoteIcons();
+
+// =====================================================================
+//  GOOGLE CHROME — VIRTUAL BROWSER
+// =====================================================================
+const chromeHomeUrl = '';
+let chromeTabSequence = 0;
+let chromeTabsState = [];
+let activeChromeTabId = null;
+let chromeFallbackTimer = null;
+let chromeLastExternalUrl = '';
+
+function createChromeTab(initialUrl = '') {
+  chromeTabSequence += 1;
+  return {
+    id: 'chrome-tab-' + chromeTabSequence,
+    title: initialUrl ? getChromeTitle(initialUrl) : 'New Tab',
+    history: initialUrl ? [initialUrl] : [chromeHomeUrl],
+    historyIndex: 0
+  };
+}
+
+function getActiveChromeTab() {
+  return chromeTabsState.find(tab => tab.id === activeChromeTabId) || null;
+}
+
+function getChromeTitle(url) {
+  if (!url) return 'New Tab';
+  try {
+    return new URL(url).hostname.replace(/^www\./, '') || 'Web page';
+  } catch (_) {
+    return 'Web page';
+  }
+}
+
+function normalizeChromeAddress(value) {
+  const input = value.trim();
+  if (!input) return chromeHomeUrl;
+  if (/^(javascript|data|file):/i.test(input)) return null;
+
+  if (/\s/.test(input) || !input.includes('.')) {
+    return 'https://www.google.com/search?q=' + encodeURIComponent(input);
+  }
+
+  const withProtocol = /^[a-z][a-z\d+\-.]*:\/\//i.test(input)
+    ? input
+    : 'https://' + input;
+
+  try {
+    const parsed = new URL(withProtocol);
+    if (!['http:', 'https:'].includes(parsed.protocol)) return null;
+    return parsed.href;
+  } catch (_) {
+    return 'https://www.google.com/search?q=' + encodeURIComponent(input);
+  }
+}
+
+function renderChromeTabs() {
+  chromeTabs.replaceChildren();
+  chromeTabsState.forEach(tab => {
+    const tabButton = document.createElement('button');
+    tabButton.className = 'chrome-tab' + (tab.id === activeChromeTabId ? ' active' : '');
+    tabButton.type = 'button';
+    tabButton.title = tab.title;
+    tabButton.addEventListener('click', () => {
+      activeChromeTabId = tab.id;
+      renderChromeTabs();
+      renderActiveChromeTab();
+    });
+
+    const tabTitle = document.createElement('span');
+    tabTitle.className = 'chrome-tab-title';
+    tabTitle.textContent = tab.title;
+
+    const closeButton = document.createElement('button');
+    closeButton.className = 'chrome-tab-close';
+    closeButton.type = 'button';
+    closeButton.title = 'Close tab';
+    closeButton.textContent = '×';
+    closeButton.addEventListener('click', event => {
+      event.stopPropagation();
+      closeChromeTab(tab.id);
+    });
+
+    tabButton.append(tabTitle, closeButton);
+    chromeTabs.appendChild(tabButton);
+  });
+}
+
+function updateChromeNavigationButtons(tab) {
+  chromeBackBtn.disabled = !tab || tab.historyIndex <= 0;
+  chromeForwardBtn.disabled = !tab || tab.historyIndex >= tab.history.length - 1;
+}
+
+function renderActiveChromeTab() {
+  const tab = getActiveChromeTab();
+  if (!tab) return;
+  const url = tab.history[tab.historyIndex] || chromeHomeUrl;
+  chromeAddress.value = url;
+  updateChromeNavigationButtons(tab);
+  clearTimeout(chromeFallbackTimer);
+  chromeFrameFallback.style.display = 'none';
+
+  if (!url) {
+    chromeFrame.hidden = true;
+    chromeHome.hidden = false;
+    return;
+  }
+
+  chromeHome.hidden = true;
+  chromeFrame.hidden = false;
+  chromeLastExternalUrl = url;
+  chromeFrame.src = url;
+  chromeFallbackTimer = window.setTimeout(() => {
+    if (getActiveChromeTab() === tab && tab.history[tab.historyIndex] === url) {
+      chromeFrameFallback.style.display = 'flex';
+    }
+  }, 4200);
+}
+
+function openChrome() {
+  if (!chromeTabsState.length) {
+    const firstTab = createChromeTab();
+    chromeTabsState = [firstTab];
+    activeChromeTabId = firstTab.id;
+  }
+  chromeWindow.classList.add('open');
+  chromeWindow.setAttribute('aria-hidden', 'false');
+  renderChromeTabs();
+  renderActiveChromeTab();
+}
+
+function closeChrome() {
+  clearTimeout(chromeFallbackTimer);
+  chromeWindow.classList.remove('open', 'maximized');
+  chromeWindow.setAttribute('aria-hidden', 'true');
+}
+
+function navigateChrome(value, { replace = false } = {}) {
+  const tab = getActiveChromeTab();
+  if (!tab) return;
+  const url = normalizeChromeAddress(value);
+  if (url === null) {
+    chromeAddress.value = tab.history[tab.historyIndex] || '';
+    return;
+  }
+
+  if (replace) {
+    tab.history[tab.historyIndex] = url;
+  } else {
+    tab.history = tab.history.slice(0, tab.historyIndex + 1);
+    tab.history.push(url);
+    tab.historyIndex += 1;
+  }
+  tab.title = getChromeTitle(url);
+  renderChromeTabs();
+  renderActiveChromeTab();
+}
+
+function createAndOpenChromeTab() {
+  const tab = createChromeTab();
+  chromeTabsState.push(tab);
+  activeChromeTabId = tab.id;
+  renderChromeTabs();
+  renderActiveChromeTab();
+}
+
+function closeChromeTab(tabId) {
+  if (chromeTabsState.length === 1) {
+    closeChrome();
+    return;
+  }
+  const closingIndex = chromeTabsState.findIndex(tab => tab.id === tabId);
+  chromeTabsState = chromeTabsState.filter(tab => tab.id !== tabId);
+  if (tabId === activeChromeTabId) {
+    const nextTab = chromeTabsState[Math.max(0, closingIndex - 1)];
+    activeChromeTabId = nextTab.id;
+  }
+  renderChromeTabs();
+  renderActiveChromeTab();
+}
+
+function moveChromeHistory(direction) {
+  const tab = getActiveChromeTab();
+  if (!tab) return;
+  const nextIndex = tab.historyIndex + direction;
+  if (nextIndex < 0 || nextIndex >= tab.history.length) return;
+  tab.historyIndex = nextIndex;
+  renderActiveChromeTab();
+}
+
+chromeIcon.addEventListener('click', openChrome);
+chromeCloseBtn.addEventListener('click', closeChrome);
+chromeMinBtn.addEventListener('click', closeChrome);
+chromeMaxBtn.addEventListener('click', () => {
+  chromeWindow.classList.toggle('maximized');
+});
+chromeNewTabBtn.addEventListener('click', createAndOpenChromeTab);
+chromeBackBtn.addEventListener('click', () => moveChromeHistory(-1));
+chromeForwardBtn.addEventListener('click', () => moveChromeHistory(1));
+chromeReloadBtn.addEventListener('click', () => {
+  const tab = getActiveChromeTab();
+  if (!tab) return;
+  renderActiveChromeTab();
+});
+chromeHomeBtn.addEventListener('click', () => navigateChrome(''));
+chromeAddressForm.addEventListener('submit', event => {
+  event.preventDefault();
+  navigateChrome(chromeAddress.value);
+});
+chromeHomeSearchForm.addEventListener('submit', event => {
+  event.preventDefault();
+  navigateChrome(chromeHomeSearchInput.value);
+  chromeHomeSearchInput.value = '';
+});
+chromeMenuBtn.addEventListener('click', () => chromeAddress.focus());
+chromeExternalButton.addEventListener('click', () => {
+  if (chromeLastExternalUrl) window.open(chromeLastExternalUrl, '_blank', 'noopener,noreferrer');
+});
+chromeFrame.addEventListener('load', () => {
+  chromeFrameFallback.style.display = 'none';
+  clearTimeout(chromeFallbackTimer);
+  const tab = getActiveChromeTab();
+  if (!tab || !chromeFrame.src) return;
+  try {
+    const frameTitle = chromeFrame.contentDocument && chromeFrame.contentDocument.title;
+    if (frameTitle) {
+      tab.title = frameTitle;
+      renderChromeTabs();
+    }
+  } catch (_) {
+    // Cross-origin pages intentionally cannot be inspected by the parent page.
+  }
 });
 
 function openAbout() {
